@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Domain", "SmartInventorySystemApi.Domain\SmartInventorySystemApi.Domain.csproj", "{C690F0E3-660B-4F97-8206-6674D83071C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Application", "SmartInventorySystemApi.Application\SmartInventorySystemApi.Application.csproj", "{CA2AD89B-BFD5-4273-B0F5-568AD65DCA64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Persistance", "SmartInventorySystemApi.Persistance\SmartInventorySystemApi.Persistance.csproj", "{45D3B858-5790-45A8-9F67-329628A03C54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Infrastructure", "SmartInventorySystemApi.Infrastructure\SmartInventorySystemApi.Infrastructure.csproj", "{EAC2595C-83D7-4C37-8EF3-4500ADB80899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Api", "SmartInventorySystemApi.Api\SmartInventorySystemApi.Api.csproj", "{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C690F0E3-660B-4F97-8206-6674D83071C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C690F0E3-660B-4F97-8206-6674D83071C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C690F0E3-660B-4F97-8206-6674D83071C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C690F0E3-660B-4F97-8206-6674D83071C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA2AD89B-BFD5-4273-B0F5-568AD65DCA64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA2AD89B-BFD5-4273-B0F5-568AD65DCA64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA2AD89B-BFD5-4273-B0F5-568AD65DCA64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA2AD89B-BFD5-4273-B0F5-568AD65DCA64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45D3B858-5790-45A8-9F67-329628A03C54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45D3B858-5790-45A8-9F67-329628A03C54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45D3B858-5790-45A8-9F67-329628A03C54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45D3B858-5790-45A8-9F67-329628A03C54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC2595C-83D7-4C37-8EF3-4500ADB80899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC2595C-83D7-4C37-8EF3-4500ADB80899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC2595C-83D7-4C37-8EF3-4500ADB80899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC2595C-83D7-4C37-8EF3-4500ADB80899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
