@@ -26,9 +26,9 @@
 				"GitHub.copilot"
 			]
 		}
-	}
+	},
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "dotnet restore",
+	"postCreateCommand": "dotnet restore && dotnet dev-certs https --trust && git config --global user.name 'shchoholiev' && git config --global user.email 'sh.codework@gmail.com'"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
