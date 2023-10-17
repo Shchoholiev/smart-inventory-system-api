@@ -1,4 +1,4 @@
-﻿namespace SmartInventorySystemApi.Application.Models.Identity;
+﻿namespace SmartInventorySystemApi.Application.Models.Dto;
 
 public class RoleDto
 {

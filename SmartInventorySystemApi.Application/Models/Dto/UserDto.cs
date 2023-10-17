@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace SmartInventorySystemApi.Application.Models.Identity;
+namespace SmartInventorySystemApi.Application.Models.Dto;
 
 public class UserDto
 {
@@ -11,8 +11,6 @@ public class UserDto
     public string? Phone { get; set; }
 
     public string? Email { get; set; }
-
-    public string? PasswordHash { get; set; }
 
     public ObjectId? GroupId { get; set; }
 
