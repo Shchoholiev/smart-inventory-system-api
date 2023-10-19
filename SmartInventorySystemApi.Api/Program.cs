@@ -1,3 +1,4 @@
+using SmartInventorySystemApi.Api.CustomMiddlewares;
 using SmartInventorySystemApi.Application;
 using SmartInventorySystemApi.Infrastructure;
 using SmartInventorySystemApi.Persistance;
@@ -27,6 +28,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseMiddleware<GlobalUserCustomMiddleware>();
 
 app.MapControllers();
 

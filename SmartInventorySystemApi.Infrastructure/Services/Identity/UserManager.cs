@@ -7,6 +7,7 @@ using SmartInventorySystemApi.Application.IRepositories;
 using SmartInventorySystemApi.Application.IServices.Identity;
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
+using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Models.Identity;
 using SmartInventorySystemApi.Domain.Entities.Identity;
 using System.Security.Claims;
@@ -204,7 +205,7 @@ public class UserManager : ServiceBase, IUserManager
 
     public async Task<UpdateUserModel> UpdateAsync(UserDto userDto, CancellationToken cancellationToken)
     {
-        // _logger.LogInformation($"Updating user with id: {GlobalUser.Id}.");
+        _logger.LogInformation($"Updating user with id: {GlobalUser.Id}.");
 
         var user = await this._usersRepository.GetOneAsync(x => x.Id == ParseObjectId(userDto.Id), cancellationToken);
         if (user == null)
@@ -228,7 +229,7 @@ public class UserManager : ServiceBase, IUserManager
 
         var updatedUserDto = this._mapper.Map<UserDto>(updatedUser);
 
-        // this._logger.LogInformation($"Update user with id: {GlobalUser.Id}.");
+        this._logger.LogInformation($"Update user with id: {GlobalUser.Id}.");
 
         return new UpdateUserModel() 
         { 
@@ -296,11 +297,12 @@ public class UserManager : ServiceBase, IUserManager
     private IEnumerable<Claim> GetClaims(User user)
     {
         var claims = new List<Claim>()
-            {
-                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new (ClaimTypes.Email, user.Email ?? string.Empty),
-                new (ClaimTypes.MobilePhone, user.Phone ?? string.Empty),
-            };
+        {
+            new (ClaimTypes.Name, user.Name ?? string.Empty),
+            new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new (ClaimTypes.Email, user.Email ?? string.Empty),
+            new (ClaimTypes.MobilePhone, user.Phone ?? string.Empty),
+        };
 
         foreach (var role in user.Roles)
         {

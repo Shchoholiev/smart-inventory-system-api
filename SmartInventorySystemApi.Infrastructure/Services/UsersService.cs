@@ -4,6 +4,7 @@ using SmartInventorySystemApi.Application.Exceptions;
 using SmartInventorySystemApi.Application.IRepositories;
 using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.Models.Dto;
+using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Entities.Identity;
 
@@ -54,7 +55,7 @@ public class UsersService : IUsersService
     public async Task UpdateUserAsync(UserDto dto, CancellationToken cancellationToken)
     {
         var entity = _mapper.Map<User>(dto);
-        // entity.LastModifiedById = GlobalUser.Id.Value;
+        entity.LastModifiedById = GlobalUser.Id.Value;
         entity.LastModifiedDateUtc = DateTime.UtcNow;
         await _repository.UpdateUserAsync(entity, cancellationToken);
     }
