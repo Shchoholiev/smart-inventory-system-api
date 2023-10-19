@@ -8,6 +8,4 @@ public interface IUsersService
     Task<PagedList<UserDto>> GetUsersPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
     Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken);
-
-    Task UpdateUserAsync(UserDto dto, CancellationToken cancellationToken);
 }

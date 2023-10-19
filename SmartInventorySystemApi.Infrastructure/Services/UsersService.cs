@@ -22,12 +22,6 @@ public class UsersService : IUsersService
         _mapper = mapper;
     }
 
-    public async Task AddUserAsync(UserDto dto, CancellationToken cancellationToken)
-    {
-        var entity = _mapper.Map<User>(dto);
-        await _repository.AddAsync(entity, cancellationToken);
-    }
-
     public async Task<PagedList<UserDto>> GetUsersPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var entities = await _repository.GetPageAsync(pageNumber, pageSize, cancellationToken);
@@ -50,13 +44,5 @@ public class UsersService : IUsersService
         }
 
         return _mapper.Map<UserDto>(entity);
-    }
-
-    public async Task UpdateUserAsync(UserDto dto, CancellationToken cancellationToken)
-    {
-        var entity = _mapper.Map<User>(dto);
-        entity.LastModifiedById = GlobalUser.Id.Value;
-        entity.LastModifiedDateUtc = DateTime.UtcNow;
-        await _repository.UpdateUserAsync(entity, cancellationToken);
     }
 }

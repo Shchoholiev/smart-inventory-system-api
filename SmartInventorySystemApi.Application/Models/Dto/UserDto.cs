@@ -14,7 +14,7 @@ public class UserDto
 
     public string? Password { get; set; }
 
-    public ObjectId? GroupId { get; set; }
+    public string? GroupId { get; set; }
 
     public List<RoleDto> Roles { get; set; }
 }
