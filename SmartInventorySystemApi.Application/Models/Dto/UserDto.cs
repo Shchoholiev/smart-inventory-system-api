@@ -12,6 +12,8 @@ public class UserDto
 
     public string? Email { get; set; }
 
+    public string? Password { get; set; }
+
     public ObjectId? GroupId { get; set; }
 
     public List<RoleDto> Roles { get; set; }
