@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Inf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.Api", "SmartInventorySystemApi.Api\SmartInventorySystemApi.Api.csproj", "{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartInventorySystemApi.IntegrationTests", "SmartInventorySystemApi.IntegrationTests\SmartInventorySystemApi.IntegrationTests.csproj", "{DDDF6E5A-AB35-40D1-AE78-3E355744EAB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B8D224B-FA55-4B4F-BFEA-FA08EDFE0AE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDDF6E5A-AB35-40D1-AE78-3E355744EAB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDDF6E5A-AB35-40D1-AE78-3E355744EAB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDDF6E5A-AB35-40D1-AE78-3E355744EAB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDDF6E5A-AB35-40D1-AE78-3E355744EAB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
