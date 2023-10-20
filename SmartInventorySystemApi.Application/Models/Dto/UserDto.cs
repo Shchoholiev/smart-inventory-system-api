@@ -1,6 +1,4 @@
-﻿using MongoDB.Bson;
-
-namespace SmartInventorySystemApi.Application.Models.Dto;
+﻿namespace SmartInventorySystemApi.Application.Models.Dto;
 
 public class UserDto
 {

@@ -65,6 +65,18 @@ public class DbInitializer
         };
         await usersCollection.InsertOneAsync(testUser);
 
+        var updateTestUser = new User
+        {
+            Id = ObjectId.Parse("652c3b89ae02a3135d6309fc"),
+            Email = "test@gmail.com",
+            Phone = "+380123456789",
+            Roles = new List<Role> { userRole },
+            PasswordHash = passwordHasher.Hash("Yuiop12345"),
+            CreatedById = ObjectId.Empty,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await usersCollection.InsertOneAsync(updateTestUser);
+
         var adminUser = new User
         {
             Id = ObjectId.Parse("652c3b89ae02a3135d6408fc"),

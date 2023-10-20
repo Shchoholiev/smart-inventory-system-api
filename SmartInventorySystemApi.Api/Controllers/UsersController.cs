@@ -5,6 +5,7 @@ using SmartInventorySystemApi.Application.IServices.Identity;
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.Identity;
+using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Application.Paging;
 
 namespace SmartInventorySystemApi.Api.Controllers;
@@ -48,7 +49,7 @@ public class UsersController : ApiController
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult<UpdateUserModel>> UpdateAsync([FromBody] UserDto userDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateUserModel>> UpdateAsync([FromBody] UserUpdateDto userDto, CancellationToken cancellationToken)
     {
         var updatedUserModel = await _userManager.UpdateAsync(userDto, cancellationToken);
         return Ok(updatedUserModel);
@@ -56,7 +57,7 @@ public class UsersController : ApiController
 
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
-    public async Task<ActionResult<UserDto>> UpdateUserByAdminAsync(string id, [FromBody] UserDto userDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserDto>> UpdateUserByAdminAsync(string id, [FromBody] UserUpdateDto userDto, CancellationToken cancellationToken)
     {
         var updatedUserDto = await _userManager.UpdateUserByAdminAsync(id, userDto, cancellationToken);
         return Ok(updatedUserDto);

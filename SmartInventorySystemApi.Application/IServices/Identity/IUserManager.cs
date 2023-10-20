@@ -1,6 +1,7 @@
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.Identity;
+using SmartInventorySystemApi.Application.Models.UpdateDto;
 
 namespace SmartInventorySystemApi.Application.IServices.Identity;
 
@@ -16,7 +17,7 @@ public interface IUserManager
 
     Task<UserDto> RemoveFromRoleAsync(string roleName, string userId, CancellationToken cancellationToken);
 
-    Task<UpdateUserModel> UpdateAsync(UserDto userDto, CancellationToken cancellationToken);
+    Task<UpdateUserModel> UpdateAsync(UserUpdateDto userDto, CancellationToken cancellationToken);
 
-    Task<UserDto> UpdateUserByAdminAsync(string id, UserDto userDto, CancellationToken cancellationToken);
+    Task<UserDto> UpdateUserByAdminAsync(string id, UserUpdateDto userDto, CancellationToken cancellationToken);
 }

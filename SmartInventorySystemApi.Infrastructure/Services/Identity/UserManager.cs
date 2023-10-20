@@ -9,6 +9,7 @@ using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Models.Identity;
+using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Domain.Entities.Identity;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -213,17 +214,23 @@ public class UserManager : ServiceBase, IUserManager
         return userDto;
     }
 
-    public async Task<UpdateUserModel> UpdateAsync(UserDto userDto, CancellationToken cancellationToken)
+    public async Task<UpdateUserModel> UpdateAsync(UserUpdateDto userDto, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Updating user with id: {GlobalUser.Id}.");
 
-        var user = await this._usersRepository.GetOneAsync(x => x.Id == ParseObjectId(userDto.Id), cancellationToken);
+        var user = await this._usersRepository.GetOneAsync(x => x.Id == GlobalUser.Id, cancellationToken);
         if (user == null)
         {
             throw new EntityNotFoundException("User");
         }
 
-        await ValidateUserAsync(userDto, user, cancellationToken);   
+        // TODO: Cleanup
+        var userValidationDto = new UserDto 
+        { 
+            Email = userDto.Email, 
+            Phone = userDto.Phone
+        };
+        await ValidateUserAsync(userValidationDto, user, cancellationToken);   
 
         this._mapper.Map(userDto, user);
         if (!string.IsNullOrEmpty(userDto.Password))
@@ -248,7 +255,7 @@ public class UserManager : ServiceBase, IUserManager
         };
     }
 
-    public async Task<UserDto> UpdateUserByAdminAsync(string id, UserDto userDto, CancellationToken cancellationToken)
+    public async Task<UserDto> UpdateUserByAdminAsync(string id, UserUpdateDto userDto, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Admin updating User with Id: {id}.");
 
@@ -259,7 +266,13 @@ public class UserManager : ServiceBase, IUserManager
             throw new EntityNotFoundException("User");
         }
 
-        await ValidateUserAsync(userDto, user, cancellationToken);   
+        // TODO: Cleanup
+        var userValidationDto = new UserDto 
+        { 
+            Email = userDto.Email, 
+            Phone = userDto.Phone
+        };
+        await ValidateUserAsync(userValidationDto, user, cancellationToken);   
 
         this._mapper.Map(userDto, user);
         var updatedUser = await this._usersRepository.UpdateUserAsync(user, cancellationToken);
