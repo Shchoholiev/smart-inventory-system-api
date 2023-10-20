@@ -78,5 +78,20 @@ public class DbInitializer
         await usersCollection.InsertOneAsync(adminUser);
 
         #endregion
+
+        #region RefreshTokens
+
+        var refreshTokensCollection = _dbContext.Db.GetCollection<RefreshToken>("RefreshTokens");
+
+        var refreshToken = new RefreshToken
+        {
+            Token = "test-refresh-token",
+            ExpiryDateUTC = DateTime.UtcNow.AddDays(-7),
+            CreatedById = testUser.Id,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await refreshTokensCollection.InsertOneAsync(refreshToken);
+
+        #endregion
     }
 }

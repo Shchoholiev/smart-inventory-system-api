@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using SmartInventorySystemApi.Application.Exceptions;
-using SmartInventorySystemApi.Domain.Common;
 
 namespace SmartInventorySystemApi.Api.Middlewares;
 
@@ -45,7 +41,7 @@ public class GlobalExceptionHandlerMiddleware
                 message = entityAlreadyExistsException.Message;
                 statusCode = HttpStatusCode.Conflict;
                 break;
-                
+                    
             case EntityNotFoundException entityNotFoundException:
                 message = entityNotFoundException.Message;
                 statusCode = HttpStatusCode.NotFound;
@@ -61,9 +57,14 @@ public class GlobalExceptionHandlerMiddleware
                 statusCode = HttpStatusCode.UnprocessableEntity;
                 break;
 
-            case InvalidDataException invalidPhoneNumberException:
-                message = invalidPhoneNumberException.Message;
+            case InvalidDataException invalidDataException:
+                message = invalidDataException.Message;
                 statusCode = HttpStatusCode.BadRequest;
+                break;
+
+            case SecurityTokenException securityTokenException:
+                message = securityTokenException.Message;
+                statusCode = HttpStatusCode.Unauthorized;
                 break;
 
             default:

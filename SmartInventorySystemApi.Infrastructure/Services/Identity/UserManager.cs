@@ -134,7 +134,7 @@ public class UserManager : ServiceBase, IUserManager
                 && r.IsDeleted == false, cancellationToken);
         if (refreshTokenModel == null || refreshTokenModel.ExpiryDateUTC < DateTime.UtcNow)
         {
-            throw new SecurityTokenExpiredException();
+            throw new SecurityTokenExpiredException("Refresh Token expired.");
         }
 
         var refreshToken = refreshTokenModel.Token;
