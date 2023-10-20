@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using SmartInventorySystemApi.Application.ExceptionHandling;
 using SmartInventorySystemApi.Application.Models.Identity;
 
 namespace SmartInventorySystemApi.IntegrationTests.Tests;
@@ -38,9 +39,12 @@ public class TokensControllerTests : TestsBase
 
         // Act
         var response = await HttpClient.PostAsJsonAsync($"{ResourceUrl}/refresh", initialTokens);
+        var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.NotNull(error);
+        Assert.NotNull(error.Message);
     }
 
     [Fact]
@@ -53,9 +57,12 @@ public class TokensControllerTests : TestsBase
 
         // Act
         var response = await HttpClient.PostAsJsonAsync($"{ResourceUrl}/refresh", initialTokens);
+        var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.NotNull(error);
+        Assert.NotNull(error.Message);
     }
 
     private async Task<TokensModel> GetTestTokensAsync()
