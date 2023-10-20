@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 
-namespace SmartInventorySystemApi.Api.CustomMiddlewares;
+namespace SmartInventorySystemApi.Api.Middlewares;
 
 public class GlobalUserCustomMiddleware
 {

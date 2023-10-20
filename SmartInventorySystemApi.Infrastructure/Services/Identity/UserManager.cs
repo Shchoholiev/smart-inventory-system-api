@@ -93,7 +93,7 @@ public class UserManager : ServiceBase, IUserManager
             : await this._usersRepository.GetOneAsync(u => u.Phone == login.Phone, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException("User");
         }
 
         if (!this._passwordHasher.Check(login.Password, user.PasswordHash))
@@ -156,14 +156,14 @@ public class UserManager : ServiceBase, IUserManager
         var role = await this._rolesRepository.GetOneAsync(r => r.Name == roleName, cancellationToken);
         if (role == null)
         {
-            throw new EntityNotFoundException<Role>();
+            throw new EntityNotFoundException("User");
         }
 
         var userObjectId = ParseObjectId(userId);
         var user = await this._usersRepository.GetOneAsync(userObjectId, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException("User");
         }
 
         user.Roles.Add(role);
@@ -182,14 +182,14 @@ public class UserManager : ServiceBase, IUserManager
         var role = await this._rolesRepository.GetOneAsync(r => r.Name == roleName, cancellationToken);
         if (role == null)
         {
-            throw new EntityNotFoundException<Role>();
+            throw new EntityNotFoundException("User");
         }
 
         var userObjectId = ParseObjectId(userId);
         var user = await this._usersRepository.GetOneAsync(userObjectId, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException("User");
         }
 
         var deletedRole = user.Roles.Find(x => x.Name == role.Name);
@@ -210,7 +210,7 @@ public class UserManager : ServiceBase, IUserManager
         var user = await this._usersRepository.GetOneAsync(x => x.Id == ParseObjectId(userDto.Id), cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException("User");
         }
 
         await ValidateUserAsync(userDto, user, cancellationToken);   
@@ -246,7 +246,7 @@ public class UserManager : ServiceBase, IUserManager
         var user = await this._usersRepository.GetOneAsync(userObjectId, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException<User>();
+            throw new EntityNotFoundException("User");
         }
 
         await ValidateUserAsync(userDto, user, cancellationToken);   
@@ -334,7 +334,7 @@ public class UserManager : ServiceBase, IUserManager
             if (userDto.Email != user.Email 
                 && await this._usersRepository.ExistsAsync(x => x.Email == userDto.Email, cancellationToken))
             {
-                throw new EntityAlreadyExistsException<User>("email", userDto.Email);
+                throw new EntityAlreadyExistsException("User", "Email", userDto.Email);
             }
         }
 
@@ -344,7 +344,7 @@ public class UserManager : ServiceBase, IUserManager
             if (userDto.Phone != user.Phone 
                 && await this._usersRepository.ExistsAsync(x => x.Phone == userDto.Phone, cancellationToken))
             {
-                throw new EntityAlreadyExistsException<User>("phone", userDto.Phone);
+                throw new EntityAlreadyExistsException("User", "Phone", userDto.Phone);
             }
         }
     }

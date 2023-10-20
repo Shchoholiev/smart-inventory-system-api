@@ -4,5 +4,6 @@ public class InvalidPhoneNumberException : Exception
 {
     public InvalidPhoneNumberException() { }
 
-    public InvalidPhoneNumberException(string phone) : base(String.Format($"String {phone} can not be a phone number.")) { }
+    public InvalidPhoneNumberException(string phone) 
+        : base($"String {phone} can not be a phone number.") { }
 }

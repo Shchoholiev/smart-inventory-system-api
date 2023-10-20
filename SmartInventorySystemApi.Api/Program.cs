@@ -1,4 +1,4 @@
-using SmartInventorySystemApi.Api.CustomMiddlewares;
+using SmartInventorySystemApi.Api.Middlewares;
 using SmartInventorySystemApi.Application;
 using SmartInventorySystemApi.Infrastructure;
 using SmartInventorySystemApi.Persistance;
@@ -29,7 +29,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseMiddleware<GlobalUserCustomMiddleware>();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
