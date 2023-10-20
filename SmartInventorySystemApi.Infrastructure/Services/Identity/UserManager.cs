@@ -88,6 +88,16 @@ public class UserManager : ServiceBase, IUserManager
     {
         _logger.LogInformation($"Logging in user with email: {login.Email} and phone: {login.Phone}.");
 
+        // TODO: move to a separate method
+        if (!string.IsNullOrEmpty(login.Email))
+        {
+            ValidateEmail(login.Email);
+        }
+        if (!string.IsNullOrEmpty(login.Phone))
+        {
+            ValidatePhone(login.Phone);
+        }
+
         var user = string.IsNullOrEmpty(login.Phone)
             ? await this._usersRepository.GetOneAsync(u => u.Email == login.Email, cancellationToken)
             : await this._usersRepository.GetOneAsync(u => u.Phone == login.Phone, cancellationToken);

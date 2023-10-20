@@ -61,6 +61,11 @@ public class GlobalExceptionHandlerMiddleware
                 statusCode = HttpStatusCode.UnprocessableEntity;
                 break;
 
+            case InvalidDataException invalidPhoneNumberException:
+                message = invalidPhoneNumberException.Message;
+                statusCode = HttpStatusCode.BadRequest;
+                break;
+
             default:
                 break;
         }
