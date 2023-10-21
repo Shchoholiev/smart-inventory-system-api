@@ -27,6 +27,9 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
         };
 
         return await this._collection.FindOneAndUpdateAsync(
-            Builders<User>.Filter.Eq(u => u.Id, user.Id), updateDefinition, options, cancellationToken);
+            Builders<User>.Filter.Eq(u => u.Id, user.Id), 
+            updateDefinition, 
+            options, 
+            cancellationToken);
     }
 }
