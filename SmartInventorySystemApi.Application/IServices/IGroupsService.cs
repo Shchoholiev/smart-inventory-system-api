@@ -5,37 +5,41 @@ namespace SmartInventorySystemApi.Application.IServices;
 
 public interface IGroupsService
 {
+    /// <summary>
+    /// Creates a new group and add current logged in user to created group.
+    /// </summary>
     Task<GroupDto> CreateGroupAsync(GroupCreateDto groupCreateDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Gets group current logged user belongs to.
     /// </summary>
-    Task<GroupDto> GetCurrentGroupAsync(CancellationToken cancellationToken);
-
-    Task<List<UserDto>> GetCurrentGroupUsersAsync(CancellationToken cancellationToken);
-
-    Task<List<DeviceDto>> GetCurrentGroupDevicesAsync(CancellationToken cancellationToken);
+    Task<GroupDto> GetGroupAsync(string groupId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Updates a group current logged user belongs to. 
+    /// Gets all users that belong to a group.
+    /// </summary>
+    Task<List<UserDto>> GetGroupUsersAsync(string groupId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Updates a group. 
     /// Only a user with <c>Owner</c> role can update a group.
     /// </summary>
-    Task<GroupDto> UpdateCurrentGroupAsync(GroupCreateDto groupCreateDto, CancellationToken cancellationToken);
+    Task<GroupDto> UpdateGroupAsync(string groupId, GroupCreateDto groupCreateDto, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Adds a user to a group current logged user belongs to if the user is not already in the group.
+    /// Adds a user to a group if the user is not already in the group.
     /// Only a user with <c>Owner</c> role can add users to a group.
     /// </summary>
-    Task<GroupDto> AddUserToCurrentGroupAsync(string userId, CancellationToken cancellationToken);
+    Task<GroupDto> AddUserToGroupAsync(string groupId, string userId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Removes a user from a group current logged user belongs to.
+    /// Removes a user from a group.
     /// Only a user with <c>Owner</c> role can add users to a group.
     /// </summary>
-    Task<GroupDto> RemoveUserToCurrentGroupAsync(string userId, CancellationToken cancellationToken);
+    Task<GroupDto> RemoveUserFromGroupAsync(string groupId, string userId, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Removes current user from a group current logged user belongs to.
+    /// Removes current user from a group.
     /// </summary>
-    Task<GroupDto> LeaveGroupAsync(CancellationToken cancellationToken);
+    Task<GroupDto> LeaveGroupAsync(string groupId, CancellationToken cancellationToken);
 }
