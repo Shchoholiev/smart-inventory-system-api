@@ -2,6 +2,6 @@ namespace SmartInventorySystemApi.Domain.Enums;
 
 public enum DeviceType
 {
-    ShelvesController,
+    Rack4ShelfController, // Controls a rack of 4 shelves
     AccessPoint
 }
