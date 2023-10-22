@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.IServices.Identity;
+using SmartInventorySystemApi.Infrastructure.Services;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 
 namespace SmartInventorySystemApi.Infrastructure;
@@ -18,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IUserManager, UserManager>();
         services.AddScoped<ITokensService, TokensService>();
         services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IGroupsService, GroupsService>();
 
         return services;
     }

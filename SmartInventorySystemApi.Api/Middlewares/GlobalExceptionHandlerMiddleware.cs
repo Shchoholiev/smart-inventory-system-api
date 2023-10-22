@@ -41,6 +41,11 @@ public class GlobalExceptionHandlerMiddleware
                 message = entityAlreadyExistsException.Message;
                 statusCode = HttpStatusCode.Conflict;
                 break;
+
+            case InvalidOperationException invalidOperationException:
+                message = invalidOperationException.Message;
+                statusCode = HttpStatusCode.Conflict;
+                break;
                     
             case EntityNotFoundException entityNotFoundException:
                 message = entityNotFoundException.Message;
@@ -65,6 +70,11 @@ public class GlobalExceptionHandlerMiddleware
             case SecurityTokenException securityTokenException:
                 message = securityTokenException.Message;
                 statusCode = HttpStatusCode.Unauthorized;
+                break;
+
+            case UnauthorizedAccessException unauthorizedAccessException:
+                message = unauthorizedAccessException.Message;
+                statusCode = HttpStatusCode.Forbidden;
                 break;
 
             default:
