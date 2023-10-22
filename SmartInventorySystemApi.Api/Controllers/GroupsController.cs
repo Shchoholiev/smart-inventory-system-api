@@ -19,10 +19,10 @@ public class GroupsController : ApiController
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> CreateGroupAsync(GroupCreateDto groupCreateDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateGroupAsync([FromBody] GroupCreateDto groupCreateDto, CancellationToken cancellationToken)
     {
         var group = await _groupsService.CreateGroupAsync(groupCreateDto, cancellationToken);
-        return CreatedAtAction(nameof(GetGroupAsync), new { groupId = group.Id }, group);
+        return CreatedAtAction("GetGroup", new { groupId = group.Id }, group);
     }
 
     [Authorize]
@@ -43,7 +43,7 @@ public class GroupsController : ApiController
 
     [Authorize(Roles = "Owner,Admin")]
     [HttpPut("{groupId}")]
-    public async Task<ActionResult<GroupDto>> UpdateGroupAsync(string groupId, GroupCreateDto groupCreateDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<GroupDto>> UpdateGroupAsync(string groupId, [FromBody] GroupCreateDto groupCreateDto, CancellationToken cancellationToken)
     {
         var group = await _groupsService.UpdateGroupAsync(groupId, groupCreateDto, cancellationToken);
         return Ok(group);

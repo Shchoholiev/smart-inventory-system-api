@@ -73,20 +73,27 @@ public class GroupsService : ServiceBase, IGroupsService
         _logger.LogInformation($"Getting users for group with Id {groupId} by user with Id: {GlobalUser.Id}");
 
         var id = ParseObjectId(groupId);
+        var groupExistsTask = _groupsRepository.ExistsAsync(
+            g => g.Id == id, cancellationToken);
         var userBelongsToGroupTask = _usersRepository.ExistsAsync(
             u => u.Id == GlobalUser.Id.Value && u.GroupId == id, cancellationToken);
         var usersTask = _usersRepository.GetPageAsync(1, 30, u => u.GroupId == id, cancellationToken);
 
-        await Task.WhenAll(userBelongsToGroupTask, usersTask);
+        await Task.WhenAll(groupExistsTask, userBelongsToGroupTask, usersTask);
+
+        var groupExists = await groupExistsTask;
+        if (!groupExists)
+        {
+            throw new EntityNotFoundException("Group");
+        }
 
         var userBelongsToGroup = await userBelongsToGroupTask;
-        var users = await usersTask;
-
         if (!userBelongsToGroup)
         {
             throw new UnauthorizedAccessException("User does not belong to this group.");
         }
 
+        var users = await usersTask;
         var dtos = _mapper.Map<List<UserDto>>(users);
 
         _logger.LogInformation($"Returning {dtos.Count} users for group with Id {groupId} by user with Id: {GlobalUser.Id}");

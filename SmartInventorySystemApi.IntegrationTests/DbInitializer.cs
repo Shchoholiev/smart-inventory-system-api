@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Domain.Entities.Identity;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 using SmartInventorySystemApi.Persistance.Database;
@@ -20,6 +21,7 @@ public class DbInitializer
         _dbContext.Client.DropDatabase(_dbContext.Db.DatabaseNamespace.DatabaseName);
         
         InitializeUsersAsync().Wait();
+        InitializeGroupsAsync().Wait();
     }
 
     public async Task InitializeUsersAsync()
@@ -68,14 +70,53 @@ public class DbInitializer
         var updateTestUser = new User
         {
             Id = ObjectId.Parse("652c3b89ae02a3135d6309fc"),
-            Email = "test@gmail.com",
-            Phone = "+380123456789",
+            Email = "update@gmail.com",
+            Phone = "+380123446789",
             Roles = new List<Role> { userRole },
             PasswordHash = passwordHasher.Hash("Yuiop12345"),
             CreatedById = ObjectId.Empty,
             CreatedDateUtc = DateTime.UtcNow
         };
         await usersCollection.InsertOneAsync(updateTestUser);
+
+        var groupOwner = new User
+        {
+            Id = ObjectId.Parse("652c3b89ae02a3135d6419fc"),
+            Email = "owner@gmail.com",
+            Phone = "+380123456689",
+            Roles = new List<Role> { userRole, ownerRole },
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // see group creation below
+            PasswordHash = passwordHasher.Hash("Yuiop12345"),
+            CreatedById = ObjectId.Empty,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await usersCollection.InsertOneAsync(groupOwner);
+
+        var groupUser = new User
+        {
+            Id = ObjectId.Parse("652c3b89ae02a3135d6439fc"),
+            Email = "group@gmail.com",
+            Phone = "+380123456889",
+            Roles = new List<Role> { userRole },
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // see group creation below
+            PasswordHash = passwordHasher.Hash("Yuiop12345"),
+            CreatedById = ObjectId.Empty,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await usersCollection.InsertOneAsync(groupUser);
+
+        var groupUser2 = new User
+        {
+            Id = ObjectId.Parse("652c3b89ae02a3135d6432fc"),
+            Email = "group2@gmail.com",
+            Phone = "+380123456779",
+            Roles = new List<Role> { userRole },
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // see group creation below
+            PasswordHash = passwordHasher.Hash("Yuiop12345"),
+            CreatedById = ObjectId.Empty,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await usersCollection.InsertOneAsync(groupUser2);
 
         var adminUser = new User
         {
@@ -105,5 +146,28 @@ public class DbInitializer
         await refreshTokensCollection.InsertOneAsync(refreshToken);
 
         #endregion
+    }
+
+    public async Task InitializeGroupsAsync()
+    {
+        var groupsCollection = _dbContext.Db.GetCollection<Group>("Groups");
+
+        var group = new Group
+        {
+            Id = ObjectId.Parse("652c3b89ae02a3135d6429fc"),
+            Name = "Test Group 1",
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6419fc"),
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await groupsCollection.InsertOneAsync(group);
+
+        var secondGroup = new Group
+        {
+            Id = ObjectId.Parse("662c3b89ae02a3135d6429fc"),
+            Name = "Test Group 1",
+            CreatedById = ObjectId.Empty,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await groupsCollection.InsertOneAsync(secondGroup);
     }
 }
