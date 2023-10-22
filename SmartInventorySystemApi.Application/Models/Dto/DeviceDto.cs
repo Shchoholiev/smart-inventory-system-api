@@ -10,5 +10,9 @@ public class DeviceDto
 
     public DeviceType Type { get; set; }
 
-    public string GroupId { get; set; }
+    public Guid Guid { get; set; }
+
+    public string? GroupId { get; set; }
+
+    public bool IsActive { get; set; }
 }
