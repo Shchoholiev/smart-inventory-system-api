@@ -6,7 +6,11 @@ namespace SmartInventorySystemApi.Application.IServices;
 public interface IGroupsService
 {
     /// <summary>
-    /// Creates a new group and add current logged in user to created group.
+    /// <list type="number">
+    /// <item>Creates a new group</item>
+    /// <item>Adds current logged in user to created group</item>
+    /// <item>Adds <c>Owner</c> role to current user</item>
+    /// </list>
     /// </summary>
     Task<GroupDto> CreateGroupAsync(GroupCreateDto groupCreateDto, CancellationToken cancellationToken);
 
@@ -41,5 +45,6 @@ public interface IGroupsService
     /// <summary>
     /// Removes current user from a group.
     /// </summary>
-    Task<GroupDto> LeaveGroupAsync(string groupId, CancellationToken cancellationToken);
+    /// TODO: Return new user tokens
+    Task LeaveGroupAsync(string groupId, CancellationToken cancellationToken);
 }

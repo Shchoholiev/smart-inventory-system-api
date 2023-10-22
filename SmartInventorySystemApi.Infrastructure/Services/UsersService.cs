@@ -4,9 +4,7 @@ using SmartInventorySystemApi.Application.Exceptions;
 using SmartInventorySystemApi.Application.IRepositories;
 using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.Models.Dto;
-using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Paging;
-using SmartInventorySystemApi.Domain.Entities.Identity;
 
 namespace SmartInventorySystemApi.Infrastructure.Services.Identity;
 
