@@ -13,12 +13,6 @@ public interface IDevicesService
     /// Only a user with <b>Admin</b> role can create a device.
     /// </summary>
     Task<DeviceAdminDto> CreateDeviceAsync(DeviceCreateDto deviceCreateDto, CancellationToken cancellationToken);
-    
-    /// <summary>
-    /// Updates a device. 
-    /// Only a user with <b>Owner</b> role has access.
-    /// </summary>
-    Task<DeviceDto> UpdateDeviceAsync(DeviceUpdateDto deviceUpdateDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns a device. 
@@ -38,4 +32,10 @@ public interface IDevicesService
     /// Only a user with <b>Owner</b> role has access.
     /// </summary>
     Task<DeviceDto> UpdateDeviceStatusAsync(string deviceId, DeviceStatusChangeDto deviceDto, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Updates a device. 
+    /// Only a user with <b>Owner</b> role has access.
+    /// </summary>
+    Task<DeviceDto> UpdateDeviceAsync(string deviceId, DeviceUpdateDto deviceUpdateDto, CancellationToken cancellationToken);
 }
