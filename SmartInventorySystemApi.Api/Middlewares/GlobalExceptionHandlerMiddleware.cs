@@ -67,6 +67,11 @@ public class GlobalExceptionHandlerMiddleware
                 statusCode = HttpStatusCode.BadRequest;
                 break;
 
+            case MissingFieldException missingFieldException:
+                message = missingFieldException.Message;
+                statusCode = HttpStatusCode.BadRequest;
+                break;
+
             case SecurityTokenException securityTokenException:
                 message = securityTokenException.Message;
                 statusCode = HttpStatusCode.Unauthorized;
@@ -75,6 +80,11 @@ public class GlobalExceptionHandlerMiddleware
             case UnauthorizedAccessException unauthorizedAccessException:
                 message = unauthorizedAccessException.Message;
                 statusCode = HttpStatusCode.Forbidden;
+                break;
+
+            case NotImplementedException notImplementedException:
+                message = notImplementedException.Message;
+                statusCode = HttpStatusCode.NotImplemented;
                 break;
 
             default:

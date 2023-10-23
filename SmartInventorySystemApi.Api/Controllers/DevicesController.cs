@@ -36,9 +36,9 @@ public class DevicesController : ApiController
 
     [HttpGet]
     [Authorize(Roles = "Owner")]
-    public async Task<List<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupdId, CancellationToken cancellationToken)
+    public async Task<List<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
     {
-        return await _devicesService.GetDevicesPageAsync(page, size, groupdId, cancellationToken);
+        return await _devicesService.GetDevicesPageAsync(page, size, groupId, cancellationToken);
     }
 
     [HttpPatch("{deviceId}/status")]

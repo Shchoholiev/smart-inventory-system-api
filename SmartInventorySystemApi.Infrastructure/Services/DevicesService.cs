@@ -11,8 +11,10 @@ using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
+using SmartInventorySystemApi.Domain.Enums;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 using DeviceEntity = SmartInventorySystemApi.Domain.Entities.Device;
+using Shelf = SmartInventorySystemApi.Domain.Entities.Shelf;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
 
@@ -20,6 +22,8 @@ namespace SmartInventorySystemApi.Infrastructure.Services;
 public class DevicesService : ServiceBase, IDevicesService
 {
     private readonly IDevicesRepository _devicesRepository;
+    
+    private readonly IShelvesRepository _shelvesRepository;
 
     // Azure IoT Hub Registry Manager
     private readonly RegistryManager _registryManager;
@@ -31,18 +35,25 @@ public class DevicesService : ServiceBase, IDevicesService
     public DevicesService(
         IDevicesRepository devicesRepository, 
         RegistryManager registryManager,
+        IShelvesRepository shelvesRepository,
         ILogger<DevicesService> logger,
         IMapper mapper)
     {
         _devicesRepository = devicesRepository;
+        _registryManager = registryManager;
+        _shelvesRepository = shelvesRepository;
         _mapper = mapper;
         _logger = logger;
-        _registryManager = registryManager;
     }
 
     public async Task<DeviceAdminDto> CreateDeviceAsync(DeviceCreateDto deviceCreateDto, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Creating a new device with name {deviceCreateDto.Name}.");
+
+        if (deviceCreateDto.Type == DeviceType.Unknown)
+        {
+            throw new MissingFieldException("Device type is required.");
+        }
 
         var device = _mapper.Map<DeviceEntity>(deviceCreateDto);
         device.Guid = Guid.NewGuid();
@@ -61,6 +72,37 @@ public class DevicesService : ServiceBase, IDevicesService
         }
 
         var createdDevice = await _devicesRepository.AddAsync(device, cancellationToken);
+
+        switch (createdDevice.Type)
+        {
+            case DeviceType.Rack4ShelfController:
+
+                _logger.LogInformation($"Creating 4 shelves for device with Id {createdDevice.Id}.");
+                
+                var shelves = new List<Shelf>();
+                for (int i = 0; i < 4; i++)
+                {
+                    var shelf = new Shelf
+                    {
+                        DeviceId = createdDevice.Id,
+                        Name = $"{createdDevice.Name} Shelf #{i + 1}",
+                        CreatedById = GlobalUser.Id.Value,
+                        CreatedDateUtc = DateTime.UtcNow
+                    };
+                    shelves.Add(shelf);
+                }
+                
+                await _shelvesRepository.AddManyShelvesAsync(shelves, cancellationToken);
+
+                _logger.LogInformation($"Created {shelves.Count} shelves for device with Id {createdDevice.Id}.");
+
+                break;
+
+            case DeviceType.Unknown:
+            case DeviceType.AccessPoint:
+            default:
+                break;
+        }
 
         var deviceDto = _mapper.Map<DeviceAdminDto>(createdDevice);
         deviceDto.AccessKey = iotDevice.Authentication.SymmetricKey.PrimaryKey;

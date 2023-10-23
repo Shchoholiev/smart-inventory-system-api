@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Domain.Entities.Identity;
+using SmartInventorySystemApi.Domain.Enums;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 using SmartInventorySystemApi.Persistance.Database;
 
@@ -22,6 +23,7 @@ public class DbInitializer
         
         InitializeUsersAsync().Wait();
         InitializeGroupsAsync().Wait();
+        InitializeDevicesAsync().Wait();
     }
 
     public async Task InitializeUsersAsync()
@@ -169,5 +171,31 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
         await groupsCollection.InsertOneAsync(secondGroup);
+    }
+
+    public async Task InitializeDevicesAsync()
+    {
+        var devicesCollection = _dbContext.Db.GetCollection<Device>("Devices");
+
+        var device = new Device
+        {
+            Id = ObjectId.Parse("651c3b89ae02a3135d6439fc"),
+            Name = "Test Device 1",
+            Type = DeviceType.Rack4ShelfController,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above (admin@gmail.com)
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await devicesCollection.InsertOneAsync(device);
+
+        var updateDevice = new Device
+        {
+            Id = ObjectId.Parse("653c3b89ae02a3135d6439fc"),
+            Name = "Test Device for Update",
+            Type = DeviceType.Rack4ShelfController,
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above (admin@gmail.com)
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await devicesCollection.InsertOneAsync(updateDevice);
     }
 }
