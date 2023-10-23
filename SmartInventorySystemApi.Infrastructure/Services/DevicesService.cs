@@ -21,7 +21,7 @@ public class DevicesService : ServiceBase, IDevicesService
 {
     private readonly IDevicesRepository _devicesRepository;
 
-    // Azure IoT Hub Service Client
+    // Azure IoT Hub Registry Manager
     private readonly RegistryManager _registryManager;
 
     private readonly ILogger _logger;

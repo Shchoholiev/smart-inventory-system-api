@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +13,7 @@ namespace SmartInventorySystemApi.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IRolesService, RolesService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -21,6 +22,11 @@ public static class DependencyInjection
         services.AddScoped<IUsersService, UsersService>();
         services.AddScoped<IGroupsService, GroupsService>();
         services.AddScoped<IDevicesService, DevicesService>();
+
+        services.AddSingleton(x => 
+            RegistryManager.CreateFromConnectionString(
+                configuration.GetConnectionString("AzureIoTHub"))
+        );
 
         return services;
     }
