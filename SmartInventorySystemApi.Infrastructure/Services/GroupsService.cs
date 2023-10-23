@@ -84,7 +84,7 @@ public class GroupsService : ServiceBase, IGroupsService
         var groupExists = await groupExistsTask;
         if (!groupExists)
         {
-            throw new EntityNotFoundException("Group");
+            throw new EntityNotFoundException($"Device with Id {groupId} is not found in database.");
         }
 
         var userBelongsToGroup = await userBelongsToGroupTask;

@@ -1,8 +1,8 @@
 using SmartInventorySystemApi.Domain.Enums;
 
-namespace SmartInventorySystemApi.Application.Models.Dto;
+namespace SmartInventorySystemApi.Application.Models.AdminDto;
 
-public class DeviceDto
+public class DeviceAdminDto
 {
     public string Id { get; set; }
 
@@ -12,7 +12,5 @@ public class DeviceDto
 
     public Guid Guid { get; set; }
 
-    public string? GroupId { get; set; }
-
-    public bool IsActive { get; set; }
+    public string AccessKey { get; set; }
 }

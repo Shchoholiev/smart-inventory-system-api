@@ -12,5 +12,9 @@ public class Device : EntityBase
     [BsonRepresentation(BsonType.String)]
     public DeviceType Type { get; set; }
 
+    public Guid Guid { get; set; }
+
     public ObjectId GroupId { get; set; }
+
+    public bool IsActive { get; set; }
 }
