@@ -9,7 +9,7 @@ using SmartInventorySystemApi.Application.Paging;
 namespace SmartInventorySystemApi.Api.Controllers;
 
 [Authorize]
-[Route("api/[controller]")]
+[Route("items")]
 public class ItemsController : ControllerBase
 {
     private readonly IItemsService _itemsService;
