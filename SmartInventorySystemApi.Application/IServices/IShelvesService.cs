@@ -1,5 +1,6 @@
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
+using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Application.Paging;
 
 namespace SmartInventorySystemApi.Application.IServices;
@@ -23,7 +24,7 @@ public interface IShelvesService
     /// User must have role <b>Owner</b>.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfDto shelfDto, CancellationToken cancellationToken);
+    Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfUpdateDto shelfDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns all items that belong to the shelf.

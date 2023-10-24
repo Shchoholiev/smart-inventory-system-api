@@ -9,6 +9,7 @@ using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
+using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
@@ -106,20 +107,27 @@ public class ShelvesService : ServiceBase, IShelvesService
         _logger.LogInformation($"Adding item to shelf with Id {shelfId}");
 
         var shelfObjectId = ParseObjectId(shelfId);
+        var shelf = await _shelvesRepository.GetOneAsync(shelfObjectId, cancellationToken);
+        if (shelf == null)
+        {
+            throw new EntityNotFoundException($"Shelf with Id {shelfId} is not found in database.");
+        }
+
         var item = _mapper.Map<Item>(itemDto);
         item.ShelfId = shelfObjectId;
+        item.GroupId = shelf.GroupId;
         item.CreatedById = GlobalUser.Id.Value;
         item.CreatedDateUtc = DateTime.UtcNow;
 
         var createdItem = await _itemsRepository.AddAsync(item, cancellationToken);
-        var dto = _mapper.Map<ItemDto>(item);
+        var dto = _mapper.Map<ItemDto>(createdItem);
 
         _logger.LogInformation($"Added item with Id {createdItem.Id} to shelf with Id {shelfId}");
 
         return dto;
     }
 
-    public async Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfDto shelfDto, CancellationToken cancellationToken)
+    public async Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfUpdateDto shelfDto, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Updating shelf with Id {shelfId}");
 
@@ -146,11 +154,13 @@ public class ShelvesService : ServiceBase, IShelvesService
     {
         _logger.LogInformation($"Updating status of shelf with Id {shelfId} and item with Id {shelfDto.ItemId}");
 
-        var itemId = ParseObjectId(shelfDto.ItemId);
-        var itemTask = _itemsRepository.GetOneAsync(itemId, cancellationToken);
-        
         var shelfObjectId = ParseObjectId(shelfId);
         var shelfTask = _shelvesRepository.GetOneAsync(shelfObjectId, cancellationToken);
+
+        var itemId = ParseObjectId(shelfDto.ItemId);
+        var itemTask = _itemsRepository.GetOneAsync(
+            i => i.Id == itemId && i.ShelfId == shelfObjectId, 
+            cancellationToken);
 
         await Task.WhenAll(shelfTask, itemTask);
 

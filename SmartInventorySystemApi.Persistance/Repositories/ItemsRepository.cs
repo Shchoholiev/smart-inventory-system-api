@@ -7,7 +7,7 @@ namespace SmartInventorySystemApi.Persistance.Repositories;
 
 public class ItemsRepository : BaseRepository<Item>, IItemsRepository
 {
-    public ItemsRepository(MongoDbContext db) : base(db, "Item") { }
+    public ItemsRepository(MongoDbContext db) : base(db, "Items") { }
 
     public async Task<Item> UpdateAsync(Item item, CancellationToken cancellationToken)
     {

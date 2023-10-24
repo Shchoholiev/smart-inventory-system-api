@@ -4,6 +4,7 @@ using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using SmartInventorySystemApi.Application.Paging;
+using SmartInventorySystemApi.Application.Models.UpdateDto;
 
 namespace SmartInventorySystemApi.Api.Controllers;
 
@@ -36,7 +37,7 @@ public class ShelvesController : ControllerBase
 
     [Authorize(Roles = "Owner")]
     [HttpPut("{shelfId}")]
-    public async Task<ActionResult<ShelfDto>> UpdateShelfAsync(string shelfId, ShelfDto shelfDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ShelfDto>> UpdateShelfAsync(string shelfId, [FromBody] ShelfUpdateDto shelfDto, CancellationToken cancellationToken)
     {
         var updatedShelf = await _shelvesService.UpdateShelfAsync(shelfId, shelfDto, cancellationToken);
         return Ok(updatedShelf);
@@ -52,15 +53,16 @@ public class ShelvesController : ControllerBase
 
     [Authorize]
     [HttpPost("{shelfId}/items")]
-    public async Task<ActionResult<ItemDto>> AddItemAsync(string shelfId, ItemDto itemDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ItemDto>> AddItemAsync(string shelfId, [FromBody] ItemDto itemDto, CancellationToken cancellationToken)
     {
         var addedItem = await _shelvesService.AddItemAsync(shelfId, itemDto, cancellationToken);
-        return Ok(addedItem);
+        // TODO change to Created At Action
+        return StatusCode(201, addedItem);
     }
 
     [Authorize]
     [HttpPatch("{shelfId}/status")]
-    public async Task<ActionResult<ShelfDto>> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelfDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ShelfDto>> UpdateShelfStatusAsync(string shelfId, [FromBody] ShelfStatusChangeDto shelfDto, CancellationToken cancellationToken)
     {
         var updatedShelf = await _shelvesService.UpdateShelfStatusAsync(shelfId, shelfDto, cancellationToken);
         return Ok(updatedShelf);
