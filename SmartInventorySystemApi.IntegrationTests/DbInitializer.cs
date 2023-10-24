@@ -24,6 +24,8 @@ public class DbInitializer
         InitializeUsersAsync().Wait();
         InitializeGroupsAsync().Wait();
         InitializeDevicesAsync().Wait();
+        InitializeShelvesAsync().Wait();
+        InitializeItemsAsync().Wait();
     }
 
     public async Task InitializeUsersAsync()
@@ -197,5 +199,111 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
         await devicesCollection.InsertOneAsync(updateDevice);
+    }
+
+    public async Task InitializeShelvesAsync()
+    {
+        var shelvesCollection = _dbContext.Db.GetCollection<Shelf>("Shelves");
+
+        var shelf1 = new Shelf
+        {
+            Id = ObjectId.Parse("651c1b09ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 1",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var shelf2 = new Shelf
+        {
+            Id = ObjectId.Parse("651c2b09ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 2",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var shelf3 = new Shelf
+        {
+            Id = ObjectId.Parse("651c3b09ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 3",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var shelf4 = new Shelf
+        {
+            Id = ObjectId.Parse("651c4b89ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 4",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        await shelvesCollection.InsertManyAsync(new List <Shelf> { shelf1, shelf2, shelf3, shelf4 });
+    }
+
+    public async Task InitializeItemsAsync()
+    {
+        var itemsCollection = _dbContext.Db.GetCollection<Item>("Items");
+
+        var item1 = new Item
+        {
+            Id = ObjectId.Parse("651c1b01ae02a3135d6439fc"),
+            Name = "Test Item 1",
+            Description = "This is a test item 1",
+            IsTaken = false,
+            ShelfId = ObjectId.Parse("651c1b09ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var item2 = new Item
+        {
+            Id = ObjectId.Parse("651c1b02ae02a3135d6439fc"),
+            Name = "Test Item 2",
+            Description = "This is a test item 2",
+            IsTaken = true,
+            ShelfId = ObjectId.Parse("651c1b09ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var item3 = new Item
+        {
+            Id = ObjectId.Parse("651c1b03ae02a3135d6439fc"),
+            Name = "Test Item 3",
+            Description = "This is a test item 3",
+            IsTaken = false,
+            ShelfId = ObjectId.Parse("651c1b09ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var item4 = new Item
+        {
+            Id = ObjectId.Parse("651c1b04ae02a3135d6439fc"),
+            Name = "Test Item 4",
+            Description = "This is a test item 4",
+            IsTaken = false,
+            ShelfId = ObjectId.Parse("651c1b09ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        await itemsCollection.InsertManyAsync(new List<Item> { item1, item2, item3, item4 });
     }
 }

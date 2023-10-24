@@ -22,10 +22,18 @@ public static class DependencyInjection
         services.AddScoped<IUsersService, UsersService>();
         services.AddScoped<IGroupsService, GroupsService>();
         services.AddScoped<IDevicesService, DevicesService>();
+        services.AddScoped<IShelvesService, ShelvesService>();
 
         services.AddSingleton(x => 
             RegistryManager.CreateFromConnectionString(
-                configuration.GetConnectionString("AzureIoTHub"))
+                configuration.GetValue<string>("AzureIoTHub:RegistryManager")
+            )
+        );
+
+        services.AddSingleton(x => 
+            ServiceClient.CreateFromConnectionString(
+                configuration.GetValue<string>("AzureIoTHub:ServiceClient")
+            )
         );
 
         return services;

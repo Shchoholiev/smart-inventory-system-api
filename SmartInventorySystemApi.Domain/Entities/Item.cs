@@ -3,15 +3,16 @@ using SmartInventorySystemApi.Domain.Common;
 
 namespace SmartInventorySystemApi.Domain.Entities;
 
-public class Shelf : EntityBase
+// TODO: add image
+public class Item : EntityBase
 {
     public string Name { get; set; }
 
-    public bool IsLitUp { get; set; }
+    public string? Description { get; set; }
+    
+    public bool IsTaken { get; set; }
 
-    public int PositionInRack { get; set; }
+    public ObjectId ShelfId { get; set; }
 
     public ObjectId GroupId { get; set; }
-
-    public ObjectId DeviceId { get; set; }
 }

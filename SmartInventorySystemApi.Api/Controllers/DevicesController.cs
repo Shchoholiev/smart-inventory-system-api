@@ -6,6 +6,7 @@ using SmartInventorySystemApi.Application.Models.AdminDto;
 using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
+using SmartInventorySystemApi.Application.Paging;
 
 namespace SmartInventorySystemApi.Api.Controllers;
 
@@ -36,7 +37,7 @@ public class DevicesController : ApiController
 
     [HttpGet]
     [Authorize(Roles = "Owner")]
-    public async Task<List<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
+    public async Task<PagedList<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
     {
         return await _devicesService.GetDevicesPageAsync(page, size, groupId, cancellationToken);
     }

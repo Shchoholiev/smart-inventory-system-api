@@ -7,7 +7,7 @@ namespace SmartInventorySystemApi.Persistance.Repositories;
 
 public class ShelvesRepository: BaseRepository<Shelf>, IShelvesRepository
 {
-    public ShelvesRepository(MongoDbContext db) : base(db, "Users") { }
+    public ShelvesRepository(MongoDbContext db) : base(db, "Shelves") { }
 
     public async Task<List<Shelf>> AddManyShelvesAsync(IEnumerable<Shelf> shelves, CancellationToken cancellationToken)
     {

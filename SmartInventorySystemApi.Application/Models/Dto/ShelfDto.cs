@@ -1,15 +1,14 @@
 using MongoDB.Bson;
-using SmartInventorySystemApi.Domain.Common;
 
-namespace SmartInventorySystemApi.Domain.Entities;
+namespace SmartInventorySystemApi.Application.Models.Dto;
 
-public class Shelf : EntityBase
+public class ShelfDto
 {
+    public string Id { get; set; }
+    
     public string Name { get; set; }
 
     public bool IsLitUp { get; set; }
-
-    public int PositionInRack { get; set; }
 
     public ObjectId GroupId { get; set; }
 
