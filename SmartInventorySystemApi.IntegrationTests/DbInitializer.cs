@@ -24,6 +24,7 @@ public class DbInitializer
         InitializeUsersAsync().Wait();
         InitializeGroupsAsync().Wait();
         InitializeDevicesAsync().Wait();
+        InitializeShelvesAsync().Wait();
     }
 
     public async Task InitializeUsersAsync()
@@ -197,5 +198,56 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
         await devicesCollection.InsertOneAsync(updateDevice);
+    }
+
+    public async Task InitializeShelvesAsync()
+    {
+        var shelvesCollection = _dbContext.Db.GetCollection<Shelf>("Shelves");
+
+        var shelf1 = new Shelf
+        {
+            Id = ObjectId.Parse("651c1b09ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 1",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var shelf2 = new Shelf
+        {
+            Id = ObjectId.Parse("651c2b09ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 2",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var shelf3 = new Shelf
+        {
+            Id = ObjectId.Parse("651c3b09ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 3",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var shelf4 = new Shelf
+        {
+            Id = ObjectId.Parse("651c4b89ae02a3135d6439fc"),
+            Name = "Test Device 1 Shelf 4",
+            PositionInRack = 1,
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        await shelvesCollection.InsertManyAsync(new List <Shelf> { shelf1, shelf2, shelf3, shelf4 });
     }
 }

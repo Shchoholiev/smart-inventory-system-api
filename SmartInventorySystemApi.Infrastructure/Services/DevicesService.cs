@@ -11,6 +11,7 @@ using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
+using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Enums;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 using DeviceEntity = SmartInventorySystemApi.Domain.Entities.Device;
@@ -127,17 +128,25 @@ public class DevicesService : ServiceBase, IDevicesService
         return deviceDto;
     }
 
-    public async Task<List<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
+    public async Task<PagedList<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Getting a page of devices for group with Id {groupId}.");
 
         var groupObjectId = ParseObjectId(groupId);
-        var devices = await _devicesRepository.GetPageAsync(page, size, d => d.GroupId == groupObjectId, cancellationToken);
+        var devicesTask = _devicesRepository.GetPageAsync(page, size, d => d.GroupId == groupObjectId, cancellationToken);
+        var totalCountTask = _devicesRepository.GetCountAsync(d => d.GroupId == groupObjectId, cancellationToken);
+
+        await Task.WhenAll(devicesTask, totalCountTask);
+
+        var devices = await devicesTask;
+        var totalCount = await totalCountTask;
+
         var deviceDtos = _mapper.Map<List<DeviceDto>>(devices);
+        var pagedList = new PagedList<DeviceDto>(deviceDtos, page, size, totalCount);
 
         _logger.LogInformation($"Found {deviceDtos.Count} devices.");
 
-        return deviceDtos;
+        return pagedList;
     }
 
     public async Task<DeviceDto> UpdateDeviceAsync(string deviceId, DeviceUpdateDto deviceUpdateDto, CancellationToken cancellationToken)

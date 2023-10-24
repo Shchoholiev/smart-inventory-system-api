@@ -2,6 +2,8 @@ using SmartInventorySystemApi.Application.IServices;
 using Microsoft.AspNetCore.Mvc;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models;
+using Microsoft.AspNetCore.Authorization;
+using SmartInventorySystemApi.Application.Paging;
 
 namespace SmartInventorySystemApi.Api.Controllers;
 
@@ -16,13 +18,15 @@ public class ShelvesController : ControllerBase
         _shelvesService = shelvesService;
     }
 
+    [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<ShelfDto>>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<ShelfDto>>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
     {
         var shelves = await _shelvesService.GetShelvesPageAsync(page, size, groupId, cancellationToken);
         return Ok(shelves);
     }
 
+    [Authorize]
     [HttpGet("{shelfId}")]
     public async Task<ActionResult<ShelfDto>> GetShelfAsync(string shelfId, CancellationToken cancellationToken)
     {
@@ -30,6 +34,7 @@ public class ShelvesController : ControllerBase
         return Ok(shelf);
     }
 
+    [Authorize(Roles = "Owner")]
     [HttpPut("{shelfId}")]
     public async Task<ActionResult<ShelfDto>> UpdateShelfAsync(string shelfId, ShelfDto shelfDto, CancellationToken cancellationToken)
     {
@@ -37,6 +42,7 @@ public class ShelvesController : ControllerBase
         return Ok(updatedShelf);
     }
 
+    [Authorize]
     [HttpGet("{shelfId}/items")]
     public async Task<ActionResult<List<ItemDto>>> GetShelfItemsAsync(string shelfId, CancellationToken cancellationToken)
     {
@@ -44,6 +50,7 @@ public class ShelvesController : ControllerBase
         return Ok(items);
     }
 
+    [Authorize]
     [HttpPost("{shelfId}/items")]
     public async Task<ActionResult<ItemDto>> AddItemAsync(string shelfId, ItemDto itemDto, CancellationToken cancellationToken)
     {
@@ -51,6 +58,7 @@ public class ShelvesController : ControllerBase
         return Ok(addedItem);
     }
 
+    [Authorize]
     [HttpPatch("{shelfId}/status")]
     public async Task<ActionResult<ShelfDto>> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelfDto, CancellationToken cancellationToken)
     {

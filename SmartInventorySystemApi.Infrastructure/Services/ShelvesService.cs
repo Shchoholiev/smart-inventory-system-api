@@ -1,4 +1,5 @@
 using AutoMapper;
+using Azure;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -8,6 +9,7 @@ using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
+using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 
@@ -44,17 +46,25 @@ public class ShelvesService : ServiceBase, IShelvesService
         _logger = logger;
     }
 
-    public async Task<List<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
+    public async Task<PagedList<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Getting shelves page {page} with size {size} for group {groupId}");
 
         var groupObjectId = ParseObjectId(groupId); 
-        var shelves = await _shelvesRepository.GetPageAsync(page, size, s => s.GroupId == groupObjectId, cancellationToken);
+        var shelvesTask = _shelvesRepository.GetPageAsync(page, size, s => s.GroupId == groupObjectId, cancellationToken);
+        var totalCountTask = _shelvesRepository.GetCountAsync(s => s.GroupId == groupObjectId, cancellationToken);
+
+        await Task.WhenAll(shelvesTask, totalCountTask);
+
+        var shelves = await shelvesTask;
+        var totalCount = await totalCountTask;
+
         var shelfDtos = _mapper.Map<List<ShelfDto>>(shelves);
+        var pagedList = new PagedList<ShelfDto>(shelfDtos, page, size, totalCount);
 
         _logger.LogInformation($"Retrieved {shelfDtos.Count} shelves");
 
-        return shelfDtos;
+        return pagedList;
     }
 
     public async Task<ShelfDto> GetShelfAsync(string shelfId, CancellationToken cancellationToken)

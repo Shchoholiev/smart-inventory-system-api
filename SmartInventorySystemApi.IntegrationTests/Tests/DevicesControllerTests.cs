@@ -5,6 +5,7 @@ using SmartInventorySystemApi.Application.Models.AdminDto;
 using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
+using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Enums;
 
 namespace SmartInventorySystemApi.IntegrationTests.Tests;
@@ -136,12 +137,12 @@ public class DevicesControllerTests : TestsBase
         // Act
         var response = await HttpClient.GetAsync($"{ResourceUrl}?page={page}&size={size}&groupId={groupId}");
         var content = await response.Content.ReadAsStringAsync();
-        var deviceDtos = await response.Content.ReadFromJsonAsync<List<DeviceDto>>();
+        var deviceDtos = await response.Content.ReadFromJsonAsync<PagedList<DeviceDto>>();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(deviceDtos);
-        Assert.True(deviceDtos.Count > 0);
+        Assert.True(deviceDtos.Items.Count() > 0);
     }
 
     [Fact]
@@ -155,12 +156,12 @@ public class DevicesControllerTests : TestsBase
 
         // Act
         var response = await HttpClient.GetAsync($"{ResourceUrl}?page={page}&size={size}&groupId={groupId}");
-        var deviceDtos = await response.Content.ReadFromJsonAsync<List<DeviceDto>>();
+        var deviceDtos = await response.Content.ReadFromJsonAsync<PagedList<DeviceDto>>();
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(deviceDtos);
-        Assert.Empty(deviceDtos);
+        Assert.Empty(deviceDtos.Items);
     }
 
     [Fact]

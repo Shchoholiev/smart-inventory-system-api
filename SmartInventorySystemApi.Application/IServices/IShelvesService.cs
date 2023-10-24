@@ -1,5 +1,6 @@
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.Dto;
+using SmartInventorySystemApi.Application.Paging;
 
 namespace SmartInventorySystemApi.Application.IServices;
 
@@ -9,7 +10,7 @@ public interface IShelvesService
     /// Returns Shelves page for a given group.
     /// User must be part of the group (Future enhancement).
     /// </summary>
-    Task<List<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken);
+    Task<PagedList<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns a Shelf.

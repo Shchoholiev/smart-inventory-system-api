@@ -3,6 +3,7 @@ using SmartInventorySystemApi.Application.Models.AdminDto;
 using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
+using SmartInventorySystemApi.Application.Paging;
 
 namespace SmartInventorySystemApi.Application.IServices;
 
@@ -24,7 +25,7 @@ public interface IDevicesService
     /// Returns a page of devices in the group. 
     /// Only a user with <b>Owner</b> role has access.
     /// </summary>
-    Task<List<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupdId, CancellationToken cancellationToken);
+    Task<PagedList<DeviceDto>> GetDevicesPageAsync(int page, int size, string groupdId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates device <c>isActive</c> flag.
