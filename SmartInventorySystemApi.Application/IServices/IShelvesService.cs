@@ -1,3 +1,4 @@
+using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Domain.Entities;
 
 namespace SmartInventorySystemApi.Application.IServices;
@@ -41,5 +42,5 @@ public interface IShelvesService
     /// Updates Shelf <c>IsLitUp</c> flag and turns on/off the physical light.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<Shelf> UpdateShelfStatusAsync(string shelfId, Shelf shelf, CancellationToken cancellationToken);
+    Task<Shelf> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelf, CancellationToken cancellationToken);
 }
