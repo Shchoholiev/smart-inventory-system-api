@@ -21,12 +21,15 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task<TEntity> GetOneAsync(ObjectId id, CancellationToken cancellationToken)
     {
-        return await this._collection.Find(x => x.Id == id).FirstOrDefaultAsync(cancellationToken);
+        return await this._collection
+            .Find(e => e.Id == id && e.IsDeleted == false)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
     {
-        return await this._collection.Find(predicate).FirstOrDefaultAsync(cancellationToken);
+        return await this._collection.Find(predicate)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
@@ -37,7 +40,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task<List<TEntity>> GetPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        return await this._collection.Find(Builders<TEntity>.Filter.Empty)
+        return await this._collection.Find(e => e.IsDeleted == false)
                                      .Skip((pageNumber - 1) * pageSize)
                                      .Limit(pageSize)
                                      .ToListAsync(cancellationToken);
@@ -51,14 +54,14 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
                                      .ToListAsync(cancellationToken);
     }
 
-    public async Task<int> GetTotalCountAsync()
+    public async Task<int> GetTotalCountAsync(CancellationToken cancellationToken)
     {
-        return (int)(await this._collection.EstimatedDocumentCountAsync());
+        return (int) await this._collection.CountDocumentsAsync(e => e.IsDeleted == false, cancellationToken: cancellationToken);
     }
 
     public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
     {
-        return (int)(await this._collection.CountDocumentsAsync(predicate, cancellationToken: cancellationToken));
+        return (int) await this._collection.CountDocumentsAsync(predicate, cancellationToken: cancellationToken);
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)

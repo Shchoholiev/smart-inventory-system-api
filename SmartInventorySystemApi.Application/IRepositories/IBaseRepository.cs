@@ -18,7 +18,7 @@ public interface IBaseRepository<TEntity> where TEntity : EntityBase
 
     Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
 
-    Task<int> GetTotalCountAsync();
+    Task<int> GetTotalCountAsync(CancellationToken cancellationToken);
 
     Task<int> GetCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken);
 

@@ -24,7 +24,7 @@ public class UsersService : IUsersService
     {
         var entities = await _repository.GetPageAsync(pageNumber, pageSize, cancellationToken);
         var dtos = _mapper.Map<List<UserDto>>(entities);
-        var count = await _repository.GetTotalCountAsync();
+        var count = await _repository.GetTotalCountAsync(cancellationToken);
         return new PagedList<UserDto>(dtos, pageNumber, pageSize, count);
     }
 
