@@ -84,6 +84,7 @@ public class DevicesService : ServiceBase, IDevicesService
                 {
                     var shelf = new Shelf
                     {
+                        PositionInRack = i + 1,
                         DeviceId = createdDevice.Id,
                         Name = $"{createdDevice.Name} Shelf #{i + 1}",
                         CreatedById = GlobalUser.Id.Value,

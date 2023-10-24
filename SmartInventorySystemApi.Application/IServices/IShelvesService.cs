@@ -22,7 +22,7 @@ public interface IShelvesService
     /// User must have role <b>Owner</b>.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfDto shelf, CancellationToken cancellationToken);
+    Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfDto shelfDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns all items that belong to the shelf.
@@ -34,7 +34,7 @@ public interface IShelvesService
     /// Adds an item to the shelf.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<ItemDto> AddItemAsync(string shelfId, ItemDto item, CancellationToken cancellationToken);
+    Task<ItemDto> AddItemAsync(string shelfId, ItemDto itemDto, CancellationToken cancellationToken);
 
     // TODO: Add MoveItem Method
 
@@ -42,5 +42,5 @@ public interface IShelvesService
     /// Updates Shelf <c>IsLitUp</c> flag and turns on/off the physical light.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<ShelfDto> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelf, CancellationToken cancellationToken);
+    Task<ShelfDto> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelfDto, CancellationToken cancellationToken);
 }

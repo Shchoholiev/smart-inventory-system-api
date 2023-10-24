@@ -9,6 +9,8 @@ public class Shelf : EntityBase
 
     public bool IsLitUp { get; set; }
 
+    public int PositionInRack { get; set; }
+
     public ObjectId GroupId { get; set; }
 
     public ObjectId DeviceId { get; set; }

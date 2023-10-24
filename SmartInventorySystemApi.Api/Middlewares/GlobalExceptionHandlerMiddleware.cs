@@ -87,6 +87,11 @@ public class GlobalExceptionHandlerMiddleware
                 statusCode = HttpStatusCode.NotImplemented;
                 break;
 
+            case IoTDeviceException ioTDeviceException:
+                message = ioTDeviceException.Message;
+                statusCode = HttpStatusCode.BadGateway;
+                break;
+
             default:
                 break;
         }
