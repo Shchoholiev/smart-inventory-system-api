@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<IGroupsService, GroupsService>();
         services.AddScoped<IDevicesService, DevicesService>();
         services.AddScoped<IShelvesService, ShelvesService>();
+        services.AddScoped<IItemsService, ItemsService>();
 
         services.AddSingleton(x => 
             RegistryManager.CreateFromConnectionString(
