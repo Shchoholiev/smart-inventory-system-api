@@ -17,7 +17,7 @@ public interface IItemsService
     /// <summary>
     /// Updates Item <c>IsTaken</c> flag. And saves Item history.
     /// </summary>
-    Task<ItemDto> UpdateItemStatusAsync(string itemId, ItemStatusChangeDto itemDto, CancellationToken cancellationToken);
+    Task<ItemDto> UpdateItemStatusAsync(string itemId, ItemStatusChangeDto status, CancellationToken cancellationToken);
 
     Task DeleteItemAsync(string itemId, CancellationToken cancellationToken);
 }
