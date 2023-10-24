@@ -1,5 +1,5 @@
 using SmartInventorySystemApi.Application.Models;
-using SmartInventorySystemApi.Domain.Entities;
+using SmartInventorySystemApi.Application.Models.Dto;
 
 namespace SmartInventorySystemApi.Application.IServices;
 
@@ -9,32 +9,32 @@ public interface IShelvesService
     /// Returns Shelves page for a given group.
     /// User must be part of the group (Future enhancement).
     /// </summary>
-    Task<List<Shelf>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken);
+    Task<List<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns a Shelf.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<Shelf> GetShelfAsync(string shelfId, CancellationToken cancellationToken);
+    Task<ShelfDto> GetShelfAsync(string shelfId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates a Shelf.
     /// User must have role <b>Owner</b>.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<Shelf> UpdateShelfAsync(string shelfId, Shelf shelf, CancellationToken cancellationToken);
+    Task<ShelfDto> UpdateShelfAsync(string shelfId, ShelfDto shelf, CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns all items that belong to the shelf.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<List<Item>> GetShelfItemsAsync(string shelfId, CancellationToken cancellationToken);
+    Task<List<ItemDto>> GetShelfItemsAsync(string shelfId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Adds an item to the shelf.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<Item> AddItemAsync(string shelfId, Item item, CancellationToken cancellationToken);
+    Task<ItemDto> AddItemAsync(string shelfId, ItemDto item, CancellationToken cancellationToken);
 
     // TODO: Add MoveItem Method
 
@@ -42,5 +42,5 @@ public interface IShelvesService
     /// Updates Shelf <c>IsLitUp</c> flag and turns on/off the physical light.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<Shelf> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelf, CancellationToken cancellationToken);
+    Task<ShelfDto> UpdateShelfStatusAsync(string shelfId, ShelfStatusChangeDto shelf, CancellationToken cancellationToken);
 }
