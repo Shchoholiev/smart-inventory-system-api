@@ -11,6 +11,7 @@ using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
+using LinqKit;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
 
@@ -36,12 +37,24 @@ public class ItemsService : ServiceBase, IItemsService
         _logger = logger;
     }
 
-    public async Task<PagedList<ItemDto>> GetItemsPageAsync(int page, int size, string groupId, bool? IsTaken, CancellationToken cancellationToken)
+    public async Task<PagedList<ItemDto>> GetItemsPageAsync(int page, int size, string groupId, string search, bool? isTaken, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Getting items page {page} with size {size} for group {groupId}.");
 
         var groupObjectId = ParseObjectId(groupId); 
-        Expression<Func<Item, bool>> predicate = i => i.GroupId == groupObjectId && (!IsTaken.HasValue || i.IsTaken == IsTaken.Value);
+        Expression<Func<Item, bool>> predicate = PredicateBuilder.New<Item>(i => i.GroupId == groupObjectId);
+
+        if (isTaken.HasValue)
+        {
+            predicate = predicate.And(i => i.IsTaken == isTaken.Value);
+        }
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            predicate = predicate.And(i => 
+                i.Name.Contains(search) 
+                || (!string.IsNullOrEmpty(i.Description) && i.Description.Contains(search)));
+        }
 
         var itemsTask = _itemsRepository.GetPageAsync(page, size, predicate, cancellationToken);
         var totalCountTask = _itemsRepository.GetCountAsync(predicate, cancellationToken);
