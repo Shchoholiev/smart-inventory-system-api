@@ -39,10 +39,10 @@ public class ItemsControllerTests : TestsBase
     {
         // Arrange
         await LoginAsync("group@gmail.com", "Yuiop12345");
-        int page = 1;
-        int size = 10;
-        string groupId = "652c3b89ae02a3135d6429fc"; // group with items
-        bool? isTaken = true;
+        var page = 1;
+        var size = 10;
+        var groupId = "652c3b89ae02a3135d6429fc"; // group with items
+        var isTaken = true;
 
         // Act
         var response = await HttpClient.GetAsync($"{ResourceUrl}?page={page}&size={size}&groupId={groupId}&IsTaken={isTaken}");
@@ -55,12 +55,34 @@ public class ItemsControllerTests : TestsBase
     }
 
     [Fact]
+    public async Task GetItemsPageAsync_GroupWithItemsAndIsTakenAndSearch_ReturnsFilteredItemsPagedList()
+    {
+        // Arrange
+        await LoginAsync("group@gmail.com", "Yuiop12345");
+        var page = 1;
+        var size = 10;
+        var groupId = "652c3b89ae02a3135d6429fc"; // group with items
+        var search = "Item 1";
+        var isTaken = false;
+
+        // Act
+        var response = await HttpClient.GetAsync($"{ResourceUrl}?page={page}&size={size}&groupId={groupId}&IsTaken={isTaken}&search={search}");
+        var itemsList = await response.Content.ReadFromJsonAsync<PagedList<ItemDto>>();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(itemsList);
+        Assert.True(itemsList.Items.All(i => i.IsTaken == isTaken));
+        Assert.True(itemsList.Items.All(i => i.Name.Contains(search)));
+    }
+
+    [Fact]
     public async Task GetItemsPageAsync_UnauthorizedUser_ReturnsUnathorized()
     {
         // Arrange
-        int page = 1;
-        int size = 10;
-        string groupId = "652c3b89ae02a3135d6429fc"; // group with shelves
+        var page = 1;
+        var size = 10;
+        var groupId = "652c3b89ae02a3135d6429fc"; // group with shelves
 
         // Act
         var response = await HttpClient.GetAsync($"{ResourceUrl}?page={page}&size={size}&groupId={groupId}");
