@@ -14,5 +14,11 @@ public interface IImageRecognitionService
     /// Finds and reads QR/Bar codes from an image.
     /// Currently uses internal Python ML API.
     /// </summary>
-    Task<IList<ScannableCode>> ReadQrBarCodesAsync(Stream image, CancellationToken cancellationToken);
+    Task<IList<ScannableCode>> ReadScannableCodeAsync(Stream image, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Generates QR/Bar codes using internal Python ML API.
+    /// Barcode generation is not supported yet.
+    /// </summary>
+    Task<Stream> GenerateScannableCodeAsync(ScannableCode code, CancellationToken cancellationToken);
 }

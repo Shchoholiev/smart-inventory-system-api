@@ -71,4 +71,14 @@ public static class DependencyInjection
 
         return services;
     }
+
+    public static IServiceCollection AddHttpClients(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHttpClient<IImageRecognitionService, ImageRecognitionService>(client =>
+        {
+            client.BaseAddress = new Uri(configuration.GetValue<string>("InternalMLApi:Endpoint"));
+        });
+
+        return services;
+    }
 }
