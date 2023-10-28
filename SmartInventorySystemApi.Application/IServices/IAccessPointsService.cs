@@ -12,6 +12,5 @@ public interface IAccessPointsService
     /// Used only by <b>Access Point Device</b>.
     /// </summary>
     /// <param name="deviceGuid">Device Guid -> Azure IoT DeviceId</param>
-    /// <returns></returns>
     Task FindItemByImageAsync(string deviceGuid, Stream image, CancellationToken cancellationToken);
 }

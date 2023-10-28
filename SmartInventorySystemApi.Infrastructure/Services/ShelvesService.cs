@@ -24,8 +24,7 @@ public class ShelvesService : ServiceBase, IShelvesService
 
     private readonly IDevicesRepository _devicesRepository;
 
-    // Azure IoT Hub Service Client
-    private readonly ServiceClient _serviceClient;
+    private readonly IShelfControllersService _shelfControllersService;
 
     private readonly ILogger _logger;
 
@@ -35,14 +34,14 @@ public class ShelvesService : ServiceBase, IShelvesService
         IShelvesRepository shelvesRepository, 
         IItemsRepository itemsRepository,
         IDevicesRepository devicesRepository,
-        ServiceClient serviceClient,
-        ILogger<DevicesService> logger,
+        IShelfControllersService shelfControllersService,
+        ILogger<ShelvesService> logger,
         IMapper mapper)
     {
         _shelvesRepository = shelvesRepository;
         _itemsRepository = itemsRepository;
         _devicesRepository = devicesRepository;
-        _serviceClient = serviceClient;
+        _shelfControllersService = shelfControllersService;
         _mapper = mapper;
         _logger = logger;
     }
@@ -182,7 +181,7 @@ public class ShelvesService : ServiceBase, IShelvesService
             throw new EntityNotFoundException($"Shelf's Device with Id {shelf.DeviceId} is not found in database.");
         }
 
-        await ControlLightAsync(device.Guid.ToString(), shelf.PositionInRack, shelfDto.IsLitUp, cancellationToken);
+        await _shelfControllersService.ControlLightAsync(device.Guid.ToString(), shelf.PositionInRack, shelfDto.IsLitUp, cancellationToken);
 
         shelf.IsLitUp = shelfDto.IsLitUp;
         shelf.LastModifiedById = GlobalUser.Id.Value;
@@ -194,32 +193,5 @@ public class ShelvesService : ServiceBase, IShelvesService
         _logger.LogInformation($"Updated status of shelf with Id {shelfId}");
 
         return dto;
-    }
-    
-    /// <summary>
-    /// Turns on/off the light of a shelf. 
-    /// Sends a direct method to the Azure IoT device.
-    /// </summary>
-    /// <param name="deviceId">Azure IoT Device Id</param>
-    /// <param name="shelfPosition">Shelf position in rack. Count starts from bottom.</param>
-    /// <param name="turnOn"></param>
-    /// <exception cref="IoTDeviceException">Exception is thrown when method invocation fails.</exception>
-    private async Task ControlLightAsync(string deviceId, int shelfPosition, bool turnOn, CancellationToken cancellationToken)
-    {
-        var methodName = turnOn ? "TurnOnLight" : "TurnOffLight";
-        var action = turnOn ? "on" : "off";
-        var payload = new {
-            shelfPosition = shelfPosition
-        };
-        var jsonPayload = JsonConvert.SerializeObject(payload);
-        
-        var methodInvocation = new CloudToDeviceMethod(methodName, TimeSpan.FromSeconds(30));
-        methodInvocation.SetPayloadJson(jsonPayload);
-        var response = await _serviceClient.InvokeDeviceMethodAsync(deviceId, methodInvocation, cancellationToken);
-        
-        if (response.Status != 200)
-        {
-            throw new IoTDeviceException($"Failed to turn {action} the light for shelf #{shelfPosition} for device with Id {deviceId}.");
-        }
     }
 }
