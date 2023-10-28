@@ -3,14 +3,22 @@ using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SmartInventorySystemApi.Application.Exceptions;
+using SmartInventorySystemApi.Application.IRepositories;
 using SmartInventorySystemApi.Application.IServices;
+using SmartInventorySystemApi.Application.Models.GlobalInstances;
+using SmartInventorySystemApi.Domain.Entities;
+using SmartInventorySystemApi.Infrastructure.Services.Identity;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
 
-public class ShelfControllersService : IShelfControllersService
+public class ShelfControllersService : ServiceBase, IShelfControllersService
 {
     // Azure IoT Hub Service Client
     private readonly ServiceClient _serviceClient;
+
+    private readonly IItemHistoryRepository _itemHistoryRepository;
+
+    private readonly IItemsRepository _itemsRepository;
 
     private readonly ILogger _logger;
 
@@ -18,10 +26,14 @@ public class ShelfControllersService : IShelfControllersService
 
     public ShelfControllersService(
         ServiceClient serviceClient,
+        IItemHistoryRepository itemHistoryRepository,
+        IItemsRepository itemsRepository,
         ILogger<ShelvesService> logger,
         IMapper mapper)
     {
         _serviceClient = serviceClient;
+        _itemHistoryRepository = itemHistoryRepository;
+        _itemsRepository = itemsRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -55,5 +67,31 @@ public class ShelfControllersService : IShelfControllersService
         }
 
         _logger.LogInformation($"Successfully turned {action} the light for shelf #{shelfPosition} for device with Id {deviceId}.");
+    }
+
+    public async Task ControlLightAsync(string deviceId, int shelfPosition, bool turnOn, string itemId, string comment, CancellationToken cancellationToken)
+    {
+        await ControlLightAsync(deviceId, shelfPosition, turnOn, cancellationToken);
+
+        _logger.LogInformation($"Saving item history for item with Id {itemId}.");
+
+        var itemObjectId = ParseObjectId(itemId);
+        var item = await _itemsRepository.GetOneAsync(itemObjectId, cancellationToken);
+        if (item == null)
+        {
+            throw new EntityNotFoundException($"Item with Id {itemId} not found.");
+        }
+
+        var itemHistory = new ItemHistory
+        {
+            ItemId = itemObjectId,
+            Comment = comment,
+            IsTaken = item.IsTaken,
+            CreatedById = GlobalUser.Id.Value,
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await _itemHistoryRepository.AddAsync(itemHistory, cancellationToken);
+
+        _logger.LogInformation($"Successfully saved item history for item with Id: {itemId}.");
     }
 }
