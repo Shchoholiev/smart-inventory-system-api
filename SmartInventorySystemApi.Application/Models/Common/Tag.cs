@@ -1,4 +1,4 @@
-namespace SmartInventorySystemApi.Application.Models;
+namespace SmartInventorySystemApi.Application.Models.Common;
 
 public class Tag
 {

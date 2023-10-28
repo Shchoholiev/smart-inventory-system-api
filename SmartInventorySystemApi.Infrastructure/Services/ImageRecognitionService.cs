@@ -1,6 +1,6 @@
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using SmartInventorySystemApi.Application.IServices;
-using SmartInventorySystemApi.Application.Models;
+using SmartInventorySystemApi.Application.Models.Common;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
 
@@ -27,5 +27,10 @@ public class ImageRecognitionService : IImageRecognitionService
             .ToList();
         
         return tags;
+    }
+
+    public Task<IList<ScannableCode>> ReadQrBarCodesAsync(Stream image, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }
