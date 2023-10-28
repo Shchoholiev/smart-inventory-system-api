@@ -19,7 +19,7 @@ public class ItemsService : ServiceBase, IItemsService
 {
     private readonly IItemsRepository _itemsRepository;
 
-    private readonly IItemsHistoryRepository _itemsHistoryRepository;
+    private readonly IItemHistoryRepository _itemsHistoryRepository;
     
     private readonly ILogger _logger;
 
@@ -27,7 +27,7 @@ public class ItemsService : ServiceBase, IItemsService
 
     public ItemsService(
         IItemsRepository itemsRepository,
-        IItemsHistoryRepository itemsHistoryRepository,
+        IItemHistoryRepository itemsHistoryRepository,
         ILogger<DevicesService> logger,
         IMapper mapper)
     {

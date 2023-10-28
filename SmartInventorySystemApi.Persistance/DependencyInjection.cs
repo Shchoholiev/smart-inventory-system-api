@@ -18,7 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IDevicesRepository, DeviceRepository>();
         services.AddScoped<IShelvesRepository, ShelvesRepository>();
         services.AddScoped<IItemsRepository, ItemsRepository>();
-        services.AddScoped<IItemsHistoryRepository, ItemsHistoryRepository>();
+        services.AddScoped<IItemHistoryRepository, ItemHistoryRepository>();
         services.AddScoped<IScanHistoryRepository, ScanHistoryRepository>();
         
         return services;
