@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,14 @@ public static class DependencyInjection
         services.AddScoped<IDevicesService, DevicesService>();
         services.AddScoped<IShelvesService, ShelvesService>();
         services.AddScoped<IItemsService, ItemsService>();
+        services.AddScoped<IImageRecognitionService, ImageRecognitionService>();
+        
+        services.AddScoped<IComputerVisionClient, ComputerVisionClient>(
+            client => new ComputerVisionClient(new ApiKeyServiceClientCredentials(configuration.GetValue<string>("AzureCognitiveServices:ComputerVision:Key")))
+            {
+                Endpoint = configuration.GetValue<string>("AzureCognitiveServices:ComputerVision:Endpoint")
+            }
+        );
 
         services.AddSingleton(x => 
             RegistryManager.CreateFromConnectionString(
