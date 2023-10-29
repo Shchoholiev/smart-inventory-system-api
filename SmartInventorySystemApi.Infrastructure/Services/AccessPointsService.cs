@@ -194,7 +194,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 .Take(3)
                 .Select(tag => _itemsRepository.GetOneAsync(
                     // TODO: Add description? Add isTaken? Use embedded search?
-                    i => !i.IsDeleted && i.Name.Contains(tag.Name), 
+                    i => !i.IsDeleted && Regex.IsMatch(i.Name, tag.Name, RegexOptions.IgnoreCase), 
                     cancellationToken));
             var searchResults = await Task.WhenAll(searchTasks);
             if (searchResults.Any(i => i != null))

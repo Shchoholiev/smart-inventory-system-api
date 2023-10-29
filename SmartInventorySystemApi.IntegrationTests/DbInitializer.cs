@@ -26,6 +26,7 @@ public class DbInitializer
         InitializeDevicesAsync().Wait();
         InitializeShelvesAsync().Wait();
         InitializeItemsAsync().Wait();
+        InitializeScansHistoryAsync().Wait();
     }
 
     public async Task InitializeUsersAsync()
@@ -199,6 +200,17 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
         await devicesCollection.InsertOneAsync(updateDevice);
+
+        var accessPointevice = new Device
+        {
+            Id = ObjectId.Parse("753c3b89ae02a3135d6139fc"),
+            Name = "Access Point Device",
+            Type = DeviceType.AccessPoint,
+            Guid = Guid.Parse("4d09b6ae-7675-4603-b632-9e834de6957f"), 
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above (admin@gmail.com)
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await devicesCollection.InsertOneAsync(accessPointevice);
     }
 
     public async Task InitializeShelvesAsync()
@@ -304,6 +316,54 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
 
-        await itemsCollection.InsertManyAsync(new List<Item> { item1, item2, item3, item4 });
+        var charger = new Item
+        {
+            Id = ObjectId.Parse("651c1b04ae02a8135d6439fc"),
+            Name = "Magsafe Charger",
+            Description = "Apple Magsafe Charger",
+            IsTaken = false,
+            ShelfId = ObjectId.Parse("651c1b09ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        await itemsCollection.InsertManyAsync(new List<Item> { item1, item2, item3, item4, charger });
+    }
+
+    public async Task InitializeScansHistoryAsync()
+    {
+        var historyCollection = _dbContext.Db.GetCollection<ScanHistory>("ScanHistory");
+
+        var scanHistory1 = new ScanHistory
+        {
+            Id = ObjectId.Parse("651c1a01ae02a1135d6439fc"),
+            DeviceId = ObjectId.Parse("753c3b89ae02a3135d6139fc"), // See above
+            ScanType = ScanType.QRCode,
+            Result = "Item Found",
+            CreatedById = ObjectId.Empty, // Auth for Access Point Device is not implemented yet
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var scanHistory2 = new ScanHistory
+        {
+            Id = ObjectId.Parse("651c1a01ae02a1135d6431fc"),
+            DeviceId = ObjectId.Parse("753c3b89ae02a3135d6139fc"), // See above
+            ScanType = ScanType.QRCode,
+            Result = "Item Not Found",
+            CreatedById = ObjectId.Empty, // Auth for Access Point Device is not implemented yet
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        var scanHistory3 = new ScanHistory
+        {
+            Id = ObjectId.Parse("651c1a01ae02a1135d6432fc"),
+            DeviceId = ObjectId.Parse("753c3b89ae02a3135d6139fc"), // See above
+            ScanType = ScanType.QRCode,
+            Result = "Item Found",
+            CreatedById = ObjectId.Empty, // Auth for Access Point Device is not implemented yet
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await historyCollection.InsertManyAsync(new List<ScanHistory> { scanHistory1, scanHistory2, scanHistory3 });
     }
 }
