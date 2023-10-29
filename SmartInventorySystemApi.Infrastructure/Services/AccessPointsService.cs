@@ -155,10 +155,11 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
         // Function runs in parallel so it need try catch to prevent from unexpected failures
         try
         {
+            var regex = @".*/items/([0-9a-fA-F]+)";
             var decodedCodes = await _imageRecognitionService.ReadScannableCodeAsync(image, cancellationToken);
             var itemIdFromCode = decodedCodes
-                .Where(c => c.Type == ScannableCodeType.QRCode && Regex.IsMatch(c.Data, @".*/items/(\d+)"))
-                .Select(c => Regex.Match(c.Data, @".*/items/(\d+)").Groups[1].Value)
+                .Where(c => c.Type == ScannableCodeType.QRCode && Regex.IsMatch(c.Data, regex))
+                .Select(c => Regex.Match(c.Data, regex).Groups[1].Value)
                 .FirstOrDefault();
 
             if (!string.IsNullOrEmpty(itemIdFromCode))

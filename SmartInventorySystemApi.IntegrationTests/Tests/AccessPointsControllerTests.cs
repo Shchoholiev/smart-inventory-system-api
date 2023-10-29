@@ -79,14 +79,14 @@ public class AccessPointsControllerTests : TestsBase
         var deviceGuid = "4d09b6ae-7675-4603-b632-9e834de6957f"; // replace with a valid device GUID
 
         var projectDir = Environment.CurrentDirectory;
-        var imagePath = Path.Combine(projectDir, "Media", "charger-image.jpg");
+        var imagePath = Path.Combine(projectDir, "Media", "charger-image.png");
         
         byte[] imageData = File.ReadAllBytes(imagePath);
         var imageContent = new ByteArrayContent(imageData);
-        imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+        imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/png");
         var form = new MultipartFormDataContent
         {
-            { imageContent, "image", "charger-image.jpg" }
+            { imageContent, "image", "charger-image.png" }
         };
 
         // Act
@@ -103,18 +103,20 @@ public class AccessPointsControllerTests : TestsBase
         var deviceGuid = "4d09b6ae-7675-4603-b632-9e834de6957f"; // replace with a valid device GUID
 
         var projectDir = Environment.CurrentDirectory;
-        var imagePath = Path.Combine(projectDir, "Media", "charger-qrcode.png");
+        var imagePath = Path.Combine(projectDir, "Media", "charger-with-qrcode.png");
         
         byte[] imageData = File.ReadAllBytes(imagePath);
         var imageContent = new ByteArrayContent(imageData);
         imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/png");
         var form = new MultipartFormDataContent
         {
-            { imageContent, "image", "charger-qrcode.png" }
+            { imageContent, "image", "charger-with-qrcode.png" }
         };
 
         // Act
         var response = await HttpClient.PostAsync($"{ResourceUrl}/{deviceGuid}/items/identify-by-image", form);
+        var content = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(content);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -141,14 +143,14 @@ public class AccessPointsControllerTests : TestsBase
         var deviceGuid = "4d09b6ae-7685-4603-b632-9e834de6957f"; // replace with a valid device GUID
 
         var projectDir = Environment.CurrentDirectory;
-        var imagePath = Path.Combine(projectDir, "Media", "charger-qrcode.png");
+        var imagePath = Path.Combine(projectDir, "Media", "charger-with-qrcode.png");
         
         byte[] imageData = File.ReadAllBytes(imagePath);
         var imageContent = new ByteArrayContent(imageData);
         imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/png");
         var form = new MultipartFormDataContent
         {
-            { imageContent, "image", "charger-qrcode.png" }
+            { imageContent, "image", "charger-with-qrcode.png" }
         };
 
         // Act

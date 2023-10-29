@@ -185,6 +185,7 @@ public class DbInitializer
             Id = ObjectId.Parse("651c3b89ae02a3135d6439fc"),
             Name = "Test Device 1",
             Type = DeviceType.Rack4ShelfController,
+            Guid = Guid.Parse("7a78a8b2-6cf6-427d-8ed2-a5e117d8fd3f"), 
             GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
             CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above (admin@gmail.com)
             CreatedDateUtc = DateTime.UtcNow
