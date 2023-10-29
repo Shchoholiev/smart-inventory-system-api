@@ -1,5 +1,10 @@
+using SmartInventorySystemApi.Application.Models.Dto;
+
 namespace SmartInventorySystemApi.Application.IServices;
 
+/// <summary>
+/// Service used by <b>Access Point Devices</b> and <b>Users</b>.
+/// </summary>
 public interface IAccessPointsService
 {
     /// <summary>
@@ -12,5 +17,7 @@ public interface IAccessPointsService
     /// Used only by <b>Access Point Device</b>.
     /// </summary>
     /// <param name="deviceGuid">Device Guid -> Azure IoT DeviceId</param>
-    Task FindItemByImageAsync(string deviceGuid, Stream image, CancellationToken cancellationToken);
+    Task FindItemByImageAsync(string deviceGuid, byte[] image, CancellationToken cancellationToken);
+
+    Task<List<ScanHistoryDto>> GetScansHistoryAsync(int page, int size, string deviceId, CancellationToken cancellationToken);
 }

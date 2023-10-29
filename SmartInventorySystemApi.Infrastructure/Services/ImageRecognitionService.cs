@@ -25,11 +25,12 @@ public class ImageRecognitionService : IImageRecognitionService
         _logger = logger;
     }
 
-    public async Task<IList<Tag>> GetImageTagsAsync(Stream image, CancellationToken cancellationToken)
+    public async Task<IList<Tag>> GetImageTagsAsync(byte[] image, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Getting image tags.");
+        using var imageStream = new MemoryStream(image);
 
-        var tagResult = await _computerVisionClient.TagImageInStreamAsync(image, cancellationToken: cancellationToken);
+        var tagResult = await _computerVisionClient.TagImageInStreamAsync(imageStream, cancellationToken: cancellationToken);
 
         // TODO: Use mapper?
         var tags = tagResult.Tags
@@ -45,11 +46,16 @@ public class ImageRecognitionService : IImageRecognitionService
         return tags;
     }
 
-    public async Task<IList<ScannableCode>> ReadScannableCodeAsync(Stream image, CancellationToken cancellationToken)
+    public async Task<IList<ScannableCode>> ReadScannableCodeAsync(byte[] image, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Reading scannable code from image.");
 
-        var response = await _httpClient.PostAsync("scannable-codes/decode", new StreamContent(image), cancellationToken);
+        using var form = new MultipartFormDataContent
+        {
+            { new ByteArrayContent(image), "file", "image.jpg" } 
+        };
+
+        var response = await _httpClient.PostAsync("scannable-codes/decode", form, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
         var scannableCodes = JsonConvert.DeserializeObject<IList<ScannableCode>>(content);

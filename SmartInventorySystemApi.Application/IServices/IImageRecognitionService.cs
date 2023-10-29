@@ -8,13 +8,13 @@ public interface IImageRecognitionService
     /// Extract tags from an image using ML. 
     /// Currently uses Azure Cognitive Services.
     /// </summary>
-    Task<IList<Tag>> GetImageTagsAsync(Stream image, CancellationToken cancellationToken);
+    Task<IList<Tag>> GetImageTagsAsync(byte[] image, CancellationToken cancellationToken);
 
     /// <summary>
     /// Finds and reads QR/Bar codes from an image.
     /// Currently uses internal Python ML API.
     /// </summary>
-    Task<IList<ScannableCode>> ReadScannableCodeAsync(Stream image, CancellationToken cancellationToken);
+    Task<IList<ScannableCode>> ReadScannableCodeAsync(byte[] image, CancellationToken cancellationToken);
 
     /// <summary>
     /// Generates QR/Bar codes using internal Python ML API.
