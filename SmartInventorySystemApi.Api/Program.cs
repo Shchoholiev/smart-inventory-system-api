@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMapper();
 builder.Services.AddRepositories();
 builder.Services.AddServices(builder.Configuration);
+builder.Services.AddHttpClients(builder.Configuration);
 builder.Services.AddJWTTokenAuthentication(builder.Configuration);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

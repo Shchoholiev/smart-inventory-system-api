@@ -12,6 +12,7 @@ using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 using LinqKit;
+using System.Text.RegularExpressions;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
 
@@ -19,7 +20,7 @@ public class ItemsService : ServiceBase, IItemsService
 {
     private readonly IItemsRepository _itemsRepository;
 
-    private readonly IItemsHistoryRepository _itemsHistoryRepository;
+    private readonly IItemHistoryRepository _itemsHistoryRepository;
     
     private readonly ILogger _logger;
 
@@ -27,7 +28,7 @@ public class ItemsService : ServiceBase, IItemsService
 
     public ItemsService(
         IItemsRepository itemsRepository,
-        IItemsHistoryRepository itemsHistoryRepository,
+        IItemHistoryRepository itemsHistoryRepository,
         ILogger<DevicesService> logger,
         IMapper mapper)
     {
@@ -52,8 +53,9 @@ public class ItemsService : ServiceBase, IItemsService
         if (!string.IsNullOrEmpty(search))
         {
             predicate = predicate.And(i => 
-                i.Name.Contains(search) 
-                || (!string.IsNullOrEmpty(i.Description) && i.Description.Contains(search)));
+                Regex.IsMatch(i.Name, search, RegexOptions.IgnoreCase)
+                || (!string.IsNullOrEmpty(i.Description) 
+                    && Regex.IsMatch(i.Description, search, RegexOptions.IgnoreCase)));
         }
 
         var itemsTask = _itemsRepository.GetPageAsync(page, size, predicate, cancellationToken);

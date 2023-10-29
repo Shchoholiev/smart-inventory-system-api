@@ -25,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Media\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SmartInventorySystemApi.Api\SmartInventorySystemApi.Api.csproj" />
     <ProjectReference Include="..\SmartInventorySystemApi.Infrastructure\SmartInventorySystemApi.Infrastructure.csproj" />
     <ProjectReference Include="..\SmartInventorySystemApi.Persistance\SmartInventorySystemApi.Persistance.csproj" />
