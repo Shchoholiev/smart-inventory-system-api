@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SmartInventorySystemApi.Application.Exceptions;
 using SmartInventorySystemApi.Application.IRepositories;
 using SmartInventorySystemApi.Application.IServices;
+using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
@@ -104,7 +105,8 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
         _logger.LogInformation($"Successfully saved item history for item with Id: {itemId}.");
     }
 
-    public async Task UpdateShelfStatusAsync(string deviceGuid, int shelfPosition, bool isLitUp, CancellationToken cancellationToken)
+    public async Task UpdateShelfStatusAsync(
+        string deviceGuid, int shelfPosition, ShelfControllerStatusChangeDto statusChangeDto, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Updating shelf status for shelf #{shelfPosition} for Azure IoT device with DeviceId: {deviceGuid}.");
 
@@ -125,7 +127,7 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
             throw new EntityNotFoundException($"Shelf with position: {shelfPosition} and Device Id: {device.Id} is not found in database.");
         }
 
-        shelf.IsLitUp = isLitUp;
+        shelf.IsLitUp = statusChangeDto.IsLitUp;
         shelf.LastModifiedById = ObjectId.Empty; // Authorization is not yet implemented for Shelf Controllers
         shelf.LastModifiedDateUtc = DateTime.UtcNow;
         await _shelvesRepository.UpdateAsync(shelf, cancellationToken);
