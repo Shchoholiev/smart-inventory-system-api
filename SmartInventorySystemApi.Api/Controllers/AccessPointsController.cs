@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartInventorySystemApi.Application.IServices;
+using SmartInventorySystemApi.Application.Models.Dto;
 
 namespace SmartInventorySystemApi.Api.Controllers;
 
@@ -32,5 +34,12 @@ public class AccessPointsController : ApiController
         await _accessPointsService.FindItemByImageAsync(deviceGuid, imageData, cancellationToken);
 
         return Ok();
+    }
+
+    [HttpGet("{deviceId}/scans-history")]
+    [Authorize]
+    public async Task<List<ScanHistoryDto>> GetScansHistoryAsync(int page, int size, string deviceId, CancellationToken cancellationToken)
+    {
+        return await _accessPointsService.GetScansHistoryAsync(page, size, deviceId, cancellationToken);
     }
 }
