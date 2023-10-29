@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using Newtonsoft.Json;
 using SmartInventorySystemApi.Application.Exceptions;
 using SmartInventorySystemApi.Application.IRepositories;
@@ -20,6 +21,10 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
 
     private readonly IItemsRepository _itemsRepository;
 
+    private readonly IShelvesRepository _shelvesRepository;
+
+    private readonly IDevicesRepository _devicesRepository;
+
     private readonly ILogger _logger;
 
     private readonly IMapper _mapper;
@@ -28,12 +33,16 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
         ServiceClient serviceClient,
         IItemHistoryRepository itemHistoryRepository,
         IItemsRepository itemsRepository,
+        IShelvesRepository shelvesRepository,
+        IDevicesRepository devicesRepository,
         ILogger<ShelvesService> logger,
         IMapper mapper)
     {
         _serviceClient = serviceClient;
         _itemHistoryRepository = itemHistoryRepository;
         _itemsRepository = itemsRepository;
+        _shelvesRepository = shelvesRepository;
+        _devicesRepository = devicesRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -79,7 +88,7 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
         var item = await _itemsRepository.GetOneAsync(itemObjectId, cancellationToken);
         if (item == null)
         {
-            throw new EntityNotFoundException($"Item with Id {itemId} not found.");
+            throw new EntityNotFoundException($"Item with Id: {itemId} is not found in database.");
         }
 
         var itemHistory = new ItemHistory
@@ -93,5 +102,70 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
         await _itemHistoryRepository.AddAsync(itemHistory, cancellationToken);
 
         _logger.LogInformation($"Successfully saved item history for item with Id: {itemId}.");
+    }
+
+    public async Task UpdateShelfStatusAsync(string deviceGuid, int shelfPosition, bool isLitUp, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation($"Updating shelf status for shelf #{shelfPosition} for Azure IoT device with DeviceId: {deviceGuid}.");
+
+        var device = await _devicesRepository.GetOneAsync(
+            d => d.Guid == Guid.Parse(deviceGuid) && !d.IsDeleted, cancellationToken);
+        if (device == null)
+        {
+            throw new EntityNotFoundException($"Device with Guid: {deviceGuid} is not found in database.");
+        }
+
+        var shelf = await _shelvesRepository.GetOneAsync(
+            s => s.DeviceId == device.Id 
+                && s.PositionInRack == shelfPosition 
+                && !s.IsDeleted, 
+            cancellationToken);
+        if (shelf == null) 
+        {
+            throw new EntityNotFoundException($"Shelf with position: {shelfPosition} and Device Id: {device.Id} is not found in database.");
+        }
+
+        shelf.IsLitUp = isLitUp;
+        shelf.LastModifiedById = ObjectId.Empty; // Authorization is not yet implemented for Shelf Controllers
+        shelf.LastModifiedDateUtc = DateTime.UtcNow;
+        await _shelvesRepository.UpdateAsync(shelf, cancellationToken);
+
+        _logger.LogInformation($"Successfully updated shelf status for shelf #{shelfPosition} for Azure IoT device with DeviceId: {deviceGuid}.");
+    }
+
+    public async Task HandleMovementAsync(string deviceGuid, int shelfPosition, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation($"Handling movement for shelf #{shelfPosition} for Azure IoT device with DeviceId: {deviceGuid}.");
+
+        var device = await _devicesRepository.GetOneAsync(
+            d => d.Guid == Guid.Parse(deviceGuid) && !d.IsDeleted, cancellationToken);
+        if (device == null)
+        {
+            throw new EntityNotFoundException($"Device with Guid: {deviceGuid} is not found in database.");
+        }
+
+        var shelf = await _shelvesRepository.GetOneAsync(
+            s => s.DeviceId == device.Id 
+                && s.PositionInRack == shelfPosition 
+                && !s.IsDeleted, 
+            cancellationToken);
+        if (shelf == null) 
+        {
+            throw new EntityNotFoundException($"Shelf with position: {shelfPosition} and Device Id: {device.Id} is not found in database.");
+        }
+
+        if (shelf.IsLitUp)
+        {
+            var itemHistory = await _itemHistoryRepository.GetLatestItemHistoryInShelfAsync(shelf.Id, cancellationToken);
+            if (itemHistory != null)
+            {
+                _logger.LogInformation($"Shelf with Id: {shelf.Id} was recently lit up. Turning the light off.");
+                
+                var comment = "Light Turned off By ShelfController because movement was detected.";
+                await ControlLightAsync(deviceGuid, shelfPosition, false, itemHistory.ItemId.ToString(), comment, cancellationToken);
+            }
+        }
+
+        _logger.LogInformation($"Successfully handled movement for shelf #{shelfPosition} for Azure IoT device with DeviceId: {deviceGuid}.");
     }
 }

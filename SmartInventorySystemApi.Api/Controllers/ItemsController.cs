@@ -10,7 +10,7 @@ namespace SmartInventorySystemApi.Api.Controllers;
 
 [Authorize]
 [Route("items")]
-public class ItemsController : ControllerBase
+public class ItemsController : ApiController
 {
     private readonly IItemsService _itemsService;
 

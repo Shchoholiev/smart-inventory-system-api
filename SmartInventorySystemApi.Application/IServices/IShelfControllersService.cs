@@ -24,7 +24,7 @@ public interface IShelfControllersService
     /// Updates shelf 'IsLitUp' in database without triggering light.
     /// </summary>
     /// <param name="deviceGuid">Azure IoT Device Id</param>
-    Task UpdateShelfStatusAsync(string deviceGuid, int shelfPosition, bool turnOn, CancellationToken cancellationToken);
+    Task UpdateShelfStatusAsync(string deviceGuid, int shelfPosition, bool isLitUp, CancellationToken cancellationToken);
 
     /// <summary>
     /// When movement is detected on a shelf <b>Shelf Controller</b> sends request to this endpoint.

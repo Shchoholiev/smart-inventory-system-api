@@ -9,7 +9,7 @@ using SmartInventorySystemApi.Application.Models.UpdateDto;
 namespace SmartInventorySystemApi.Api.Controllers;
 
 [Route("shelves")]
-public class ShelvesController : ControllerBase
+public class ShelvesController : ApiController
 {
     private readonly IShelvesService _shelvesService;
 
