@@ -35,6 +35,7 @@ public class TestingFactory<TEntryPoint> : WebApplicationFactory<Program> where 
             // context.HostingEnvironment.EnvironmentName = "Test";
 
             config
+                .AddJsonFile($"appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.Test.json", optional: true, reloadOnChange: true);
             if (RuntimeInformation.ProcessArchitecture != Architecture.Arm64)
             {
