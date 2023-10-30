@@ -55,7 +55,7 @@ public class ItemsController : ApiController
     }
 
     [HttpGet("{itemId}/history")]
-    public async Task<ActionResult<List<ItemHistoryDto>>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<ItemHistoryDto>>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken)
     {
         var itemHistory = await _itemsService.GetItemHistoryPageAsync(itemId, page, size, cancellationToken);
         return Ok(itemHistory);

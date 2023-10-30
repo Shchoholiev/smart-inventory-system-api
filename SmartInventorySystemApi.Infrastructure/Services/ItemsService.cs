@@ -164,7 +164,7 @@ public class ItemsService : ServiceBase, IItemsService
         _logger.LogInformation($"Deleted item with Id {itemId}.");
     }
 
-    public async Task<List<ItemHistoryDto>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken)
+    public async Task<PagedList<ItemHistoryDto>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Getting item history page {page} with size {size} for item {itemId}.");
 
@@ -180,9 +180,10 @@ public class ItemsService : ServiceBase, IItemsService
         var totalCount = await totalCountTask;
 
         var itemHistoryDtos = _mapper.Map<List<ItemHistoryDto>>(itemHistories);
+        var pagedList = new PagedList<ItemHistoryDto>(itemHistoryDtos, page, size, totalCount);
 
         _logger.LogInformation($"Retrieved {itemHistoryDtos.Count} item histories.");
 
-        return itemHistoryDtos;
+        return pagedList;
     }
 }

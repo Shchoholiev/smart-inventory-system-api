@@ -21,5 +21,5 @@ public interface IItemsService
 
     Task DeleteItemAsync(string itemId, CancellationToken cancellationToken);
 
-    Task<List<ItemHistoryDto>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken);
+    Task<PagedList<ItemHistoryDto>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken);
 }
