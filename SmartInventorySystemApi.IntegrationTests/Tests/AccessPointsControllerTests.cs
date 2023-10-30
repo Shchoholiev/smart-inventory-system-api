@@ -100,7 +100,7 @@ public class AccessPointsControllerTests : TestsBase
     public async Task FindItemByImageAsync_QRCodeImage_ReturnsOk()
     {
         // Arrange
-        var deviceGuid = "4d09b6ae-7675-4603-b632-9e834de6957f"; // replace with a valid device GUID
+        var deviceGuid = "4d09b6ae-7675-4603-b632-9e834de6957f";
 
         var projectDir = Environment.CurrentDirectory;
         var imagePath = Path.Combine(projectDir, "Media", "charger-with-qrcode.png");

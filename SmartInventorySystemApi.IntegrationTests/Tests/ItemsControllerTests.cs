@@ -315,4 +315,61 @@ public class ItemsControllerTests : TestsBase
     }
 
     #endregion
+
+    #region GetItemHistoryPageAsync
+
+    [Fact]
+    public async Task GetItemHistoryPageAsync_ValidRequest_ReturnsItemHistoryPage()
+    {
+        // Arrange
+        await LoginAsync("group@gmail.com", "Yuiop12345");
+        var itemId = "651c1b04ae92a8135d6439fc";
+        var page = 1;
+        var size = 10;
+
+        // Act
+        var response = await HttpClient.GetAsync($"{ResourceUrl}/{itemId}/history?page={page}&size={size}");
+        var itemHistoryPage = await response.Content.ReadFromJsonAsync<PagedList<ItemHistoryDto>>();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(itemHistoryPage);
+        Assert.NotEmpty(itemHistoryPage.Items);
+    }
+
+    [Fact]
+    public async Task GetItemHistoryPageAsync_EmptyPage_ReturnsEmptyList()
+    {
+        // Arrange
+        await LoginAsync("group@gmail.com", "Yuiop12345");
+        var itemId = "651c1b04ae92a8135d6439fc";
+        var page = 100;  // Assume there are no items on page 100
+        var size = 10;
+
+        // Act
+        var response = await HttpClient.GetAsync($"{ResourceUrl}/{itemId}/history?page={page}&size={size}");
+        var itemHistoryPage = await response.Content.ReadFromJsonAsync<PagedList<ItemHistoryDto>>();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(itemHistoryPage);
+        Assert.Empty(itemHistoryPage.Items);
+    }
+
+    [Fact]
+    public async Task GetItemHistoryPageAsync_UnauthorizedUser_Unauthorized()
+    {
+        // Arrange
+        var itemId = "651c1b04ae92a8135d6439fc";
+        var page = 1;  // Assume there are no items on page 100
+        var size = 10;
+
+        // Act
+        var response = await HttpClient.GetAsync($"{ResourceUrl}/{itemId}/history?page={page}&size={size}");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    #endregion
 }

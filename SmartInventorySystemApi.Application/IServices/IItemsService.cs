@@ -20,4 +20,6 @@ public interface IItemsService
     Task<ItemDto> UpdateItemStatusAsync(string itemId, ItemStatusChangeDto status, CancellationToken cancellationToken);
 
     Task DeleteItemAsync(string itemId, CancellationToken cancellationToken);
+
+    Task<PagedList<ItemHistoryDto>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken);
 }

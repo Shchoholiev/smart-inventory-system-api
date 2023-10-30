@@ -13,6 +13,7 @@ using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 using LinqKit;
 using System.Text.RegularExpressions;
+using SmartInventorySystemApi.Domain.Enums;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
 
@@ -131,6 +132,7 @@ public class ItemsService : ServiceBase, IItemsService
             ItemId = item.Id,
             IsTaken = item.IsTaken,
             Comment = status.Comment,
+            Type = ItemHistoryType.Manual,
             CreatedById = GlobalUser.Id.Value,
             CreatedDateUtc = DateTime.UtcNow
         };
@@ -160,5 +162,28 @@ public class ItemsService : ServiceBase, IItemsService
         await _itemsRepository.DeleteAsync(item, cancellationToken);
 
         _logger.LogInformation($"Deleted item with Id {itemId}.");
+    }
+
+    public async Task<PagedList<ItemHistoryDto>> GetItemHistoryPageAsync(string itemId, int page, int size, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation($"Getting item history page {page} with size {size} for item {itemId}.");
+
+        var itemObjectId = ParseObjectId(itemId);
+
+        var itemHistoryPredicate = PredicateBuilder.New<ItemHistory>(ih => ih.ItemId == itemObjectId && !ih.IsDeleted);
+        var itemHistoryTask = _itemsHistoryRepository.GetPageAsync(page, size, itemHistoryPredicate, cancellationToken);
+        var totalCountTask = _itemsHistoryRepository.GetCountAsync(itemHistoryPredicate, cancellationToken);
+
+        await Task.WhenAll(itemHistoryTask, totalCountTask);
+
+        var itemHistories = await itemHistoryTask;
+        var totalCount = await totalCountTask;
+
+        var itemHistoryDtos = _mapper.Map<List<ItemHistoryDto>>(itemHistories);
+        var pagedList = new PagedList<ItemHistoryDto>(itemHistoryDtos, page, size, totalCount);
+
+        _logger.LogInformation($"Retrieved {itemHistoryDtos.Count} item histories.");
+
+        return pagedList;
     }
 }
