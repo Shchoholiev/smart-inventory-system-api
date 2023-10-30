@@ -7,11 +7,13 @@ using SmartInventorySystemApi.Application.Exceptions;
 using SmartInventorySystemApi.Application.IRepositories;
 using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.Models;
+using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Domain.Entities;
+using SmartInventorySystemApi.Domain.Enums;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
@@ -101,7 +103,7 @@ public class ShelvesService : ServiceBase, IShelvesService
         return itemDtos;
     }
 
-    public async Task<ItemDto> AddItemAsync(string shelfId, ItemDto itemDto, CancellationToken cancellationToken)
+    public async Task<ItemDto> AddItemAsync(string shelfId, ItemCreateDto itemDto, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Adding item to shelf with Id {shelfId}");
 
@@ -181,7 +183,8 @@ public class ShelvesService : ServiceBase, IShelvesService
             throw new EntityNotFoundException($"Shelf's Device with Id {shelf.DeviceId} is not found in database.");
         }
 
-        await _shelfControllersService.ControlLightAsync(device.Guid.ToString(), shelf.PositionInRack, shelfDto.IsLitUp, cancellationToken);
+        await _shelfControllersService.ControlLightAsync(
+            device.Guid.ToString(), shelf.PositionInRack, shelfDto.IsLitUp, item.Id.ToString(), ItemHistoryType.Manual, string.Empty, cancellationToken);
 
         shelf.IsLitUp = shelfDto.IsLitUp;
         shelf.LastModifiedById = GlobalUser.Id.Value;

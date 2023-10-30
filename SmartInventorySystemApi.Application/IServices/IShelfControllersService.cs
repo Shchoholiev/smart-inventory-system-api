@@ -1,4 +1,5 @@
 using SmartInventorySystemApi.Application.Models;
+using SmartInventorySystemApi.Domain.Enums;
 
 namespace SmartInventorySystemApi.Application.IServices;
 
@@ -20,7 +21,8 @@ public interface IShelfControllersService
     /// <param name="deviceGuid">Azure IoT Device Id</param>
     /// <param name="shelfPosition">Shelf position in rack. Count starts from bottom.</param>
     /// <exception cref="IoTDeviceException">Exception is thrown when method invocation fails.</exception>
-    Task ControlLightAsync(string deviceGuid, int shelfPosition, bool turnOn, string itemId, string comment, CancellationToken cancellationToken);
+    Task ControlLightAsync(
+        string deviceGuid, int shelfPosition, bool turnOn, string itemId, ItemHistoryType historyType, string comment, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates shelf 'IsLitUp' in database without triggering light.

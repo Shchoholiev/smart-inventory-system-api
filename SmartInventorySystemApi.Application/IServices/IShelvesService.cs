@@ -1,4 +1,5 @@
 using SmartInventorySystemApi.Application.Models;
+using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Application.Paging;
@@ -36,7 +37,7 @@ public interface IShelvesService
     /// Adds an item to the shelf.
     /// User must be part of the group this shelf belongs to (Future enhancement).
     /// </summary>
-    Task<ItemDto> AddItemAsync(string shelfId, ItemDto itemDto, CancellationToken cancellationToken);
+    Task<ItemDto> AddItemAsync(string shelfId, ItemCreateDto itemDto, CancellationToken cancellationToken);
 
     // TODO: Add MoveItem Method
 

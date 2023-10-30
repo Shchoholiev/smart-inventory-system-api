@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using SmartInventorySystemApi.Application.Models;
+using SmartInventorySystemApi.Application.Models.CreateDto;
 using SmartInventorySystemApi.Application.Models.Dto;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
 using SmartInventorySystemApi.Application.Paging;
@@ -177,7 +178,7 @@ public class ShelvesControllerTests : TestsBase
         // Arrange
         await LoginAsync("group@gmail.com", "Yuiop12345");
         string shelfId = "651c1b09ae02a3135d6439fc"; // valid shelf ID
-        var newItem = new ItemDto
+        var newItem = new ItemCreateDto
         {
             Name = "New Item",
             Description = "This is a new item"
@@ -185,6 +186,8 @@ public class ShelvesControllerTests : TestsBase
 
         // Act
         var response = await HttpClient.PostAsJsonAsync($"{ResourceUrl}/{shelfId}/items", newItem);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseContent);
         var createdItem = await response.Content.ReadFromJsonAsync<ItemDto>();
 
         // Assert
@@ -200,7 +203,7 @@ public class ShelvesControllerTests : TestsBase
         // Arrange
         await LoginAsync("group@gmail.com", "Yuiop12345");
         string invalidShelfId = "651c1b04ae02a3135d6139fc";
-        var newItem = new ItemDto
+        var newItem = new ItemCreateDto
         {
             Name = "New Item",
             Description = "This is a new item"
@@ -218,7 +221,7 @@ public class ShelvesControllerTests : TestsBase
     {
         // Arrange
         string shelfId = "651c1b09ae02a3135d6439fc"; // valid shelf ID
-        var newItem = new ItemDto
+        var newItem = new ItemCreateDto
         {
             Name = "New Item",
             Description = "This is a new item"

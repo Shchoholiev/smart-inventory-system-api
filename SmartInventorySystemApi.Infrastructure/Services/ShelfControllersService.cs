@@ -9,6 +9,7 @@ using SmartInventorySystemApi.Application.IServices;
 using SmartInventorySystemApi.Application.Models;
 using SmartInventorySystemApi.Application.Models.GlobalInstances;
 using SmartInventorySystemApi.Domain.Entities;
+using SmartInventorySystemApi.Domain.Enums;
 using SmartInventorySystemApi.Infrastructure.Services.Identity;
 
 namespace SmartInventorySystemApi.Infrastructure.Services;
@@ -79,7 +80,8 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
         _logger.LogInformation($"Successfully turned {action} the light for shelf #{shelfPosition} for device with Id {deviceId}.");
     }
 
-    public async Task ControlLightAsync(string deviceId, int shelfPosition, bool turnOn, string itemId, string comment, CancellationToken cancellationToken)
+    public async Task ControlLightAsync(
+        string deviceId, int shelfPosition, bool turnOn, string itemId, ItemHistoryType historyType, string comment, CancellationToken cancellationToken)
     {
         await ControlLightAsync(deviceId, shelfPosition, turnOn, cancellationToken);
 
@@ -96,6 +98,7 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
         {
             ItemId = itemObjectId,
             Comment = comment,
+            Type = historyType,
             IsTaken = item.IsTaken,
             CreatedById = GlobalUser.Id.Value,
             CreatedDateUtc = DateTime.UtcNow
@@ -164,7 +167,8 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
                 _logger.LogInformation($"Shelf with Id: {shelf.Id} was recently lit up. Turning the light off.");
                 
                 var comment = "Light Turned off By ShelfController because movement was detected.";
-                await ControlLightAsync(deviceGuid, shelfPosition, false, itemHistory.ItemId.ToString(), comment, cancellationToken);
+                await ControlLightAsync(
+                    deviceGuid, shelfPosition, false, itemHistory.ItemId.ToString(), ItemHistoryType.Shelf, comment, cancellationToken);
             }
         }
 
