@@ -19,4 +19,37 @@ public class ItemHistoryRepository : BaseRepository<ItemHistory>, IItemHistoryRe
             .Limit(size)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<ItemHistory> GetLatestItemHistoryInShelfAsync(ObjectId shelfId, CancellationToken cancellationToken)
+    {
+        // Join to Items collection to get ShelfId
+        var itemHistoryLookup = @"
+            { 
+                $lookup: { 
+                    from: 'Items',
+                    localField: 'ItemId',
+                    foreignField: '_id',
+                    as: 'Items',
+                    pipeline: [
+                        { 
+                            $match: { 
+                                'Items.ShelfId': ObjectId('" + shelfId.ToString() + @"')
+                            } 
+                        }
+                    ]
+                }
+            }";
+
+        var itemHistory = await _collection.Aggregate()
+            .Match(h => 
+                h.CreatedDateUtc > DateTime.UtcNow.AddMinutes(-5)
+                // TODO: Add ItemHistoryType? 
+                && h.IsTaken) // Get only history that are 5 minutes old
+            .AppendStage<BsonDocument>(itemHistoryLookup)
+            .AppendStage<ItemHistory>(new BsonDocument("$project", new BsonDocument("Items", 0)))
+            .SortByDescending(h => h.CreatedDateUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return itemHistory;
+    }
 }

@@ -27,6 +27,7 @@ public class DbInitializer
         InitializeShelvesAsync().Wait();
         InitializeItemsAsync().Wait();
         InitializeScansHistoryAsync().Wait();
+        InitializeItemsHistoryAsync().Wait();
     }
 
     public async Task InitializeUsersAsync()
@@ -233,7 +234,7 @@ public class DbInitializer
         {
             Id = ObjectId.Parse("651c2b09ae02a3135d6439fc"),
             Name = "Test Device 1 Shelf 2",
-            PositionInRack = 1,
+            PositionInRack = 2,
             GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
             DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
             CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
@@ -244,7 +245,7 @@ public class DbInitializer
         {
             Id = ObjectId.Parse("651c3b09ae02a3135d6439fc"),
             Name = "Test Device 1 Shelf 3",
-            PositionInRack = 1,
+            PositionInRack = 3,
             GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
             DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
             CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
@@ -255,9 +256,10 @@ public class DbInitializer
         {
             Id = ObjectId.Parse("651c4b89ae02a3135d6439fc"),
             Name = "Test Device 1 Shelf 4",
-            PositionInRack = 1,
+            PositionInRack = 4,
             GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
             DeviceId = ObjectId.Parse("651c3b89ae02a3135d6439fc"), // See above
+            IsLitUp = true,
             CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
             CreatedDateUtc = DateTime.UtcNow
         };
@@ -329,7 +331,19 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
 
-        await itemsCollection.InsertManyAsync(new List<Item> { item1, item2, item3, item4, charger });
+        var movementTestItem = new Item
+        {
+            Id = ObjectId.Parse("651c1b04ae92a8135d6439fc"),
+            Name = "Movement Test",
+            Description = "Test",
+            IsTaken = true,
+            ShelfId = ObjectId.Parse("651c4b89ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
+        await itemsCollection.InsertManyAsync(new List<Item> { item1, item2, item3, item4, charger, movementTestItem });
     }
 
     public async Task InitializeScansHistoryAsync()
@@ -366,5 +380,22 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
         await historyCollection.InsertManyAsync(new List<ScanHistory> { scanHistory1, scanHistory2, scanHistory3 });
+    }
+
+    public async Task InitializeItemsHistoryAsync()
+    {
+        var historyCollection = _dbContext.Db.GetCollection<ItemHistory>("ItemHistory");
+
+        var itemHistory1 = new ItemHistory
+        {
+            Id = ObjectId.Parse("651c1a01ae02a1125d6439fc"),
+            ItemId = ObjectId.Parse("651c1b04ae92a8135d6439fc"), // See above
+            Comment = "Light Turned on By AccessPointDevice. QRCode Scan.",
+            IsTaken = true,
+            Type = ItemHistoryType.Scan,
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6409fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+        await historyCollection.InsertManyAsync(new List<ItemHistory> { itemHistory1 });
     }
 }

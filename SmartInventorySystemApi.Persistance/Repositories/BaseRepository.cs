@@ -22,7 +22,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     public async Task<TEntity> GetOneAsync(ObjectId id, CancellationToken cancellationToken)
     {
         return await this._collection
-            .Find(e => e.Id == id && e.IsDeleted == false)
+            .Find(e => e.Id == id && !e.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -40,7 +40,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task<List<TEntity>> GetPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        return await this._collection.Find(e => e.IsDeleted == false)
+        return await this._collection.Find(e => !e.IsDeleted)
                                      .Skip((pageNumber - 1) * pageSize)
                                      .Limit(pageSize)
                                      .ToListAsync(cancellationToken);
@@ -56,7 +56,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
 
     public async Task<int> GetTotalCountAsync(CancellationToken cancellationToken)
     {
-        return (int) await this._collection.CountDocumentsAsync(e => e.IsDeleted == false, cancellationToken: cancellationToken);
+        return (int) await this._collection.CountDocumentsAsync(e => !e.IsDeleted, cancellationToken: cancellationToken);
     }
 
     public async Task<int> GetCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)

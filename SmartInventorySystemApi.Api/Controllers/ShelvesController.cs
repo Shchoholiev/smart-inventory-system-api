@@ -5,11 +5,12 @@ using SmartInventorySystemApi.Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using SmartInventorySystemApi.Application.Paging;
 using SmartInventorySystemApi.Application.Models.UpdateDto;
+using SmartInventorySystemApi.Application.Models.CreateDto;
 
 namespace SmartInventorySystemApi.Api.Controllers;
 
 [Route("shelves")]
-public class ShelvesController : ControllerBase
+public class ShelvesController : ApiController
 {
     private readonly IShelvesService _shelvesService;
 
@@ -53,7 +54,7 @@ public class ShelvesController : ControllerBase
 
     [Authorize]
     [HttpPost("{shelfId}/items")]
-    public async Task<ActionResult<ItemDto>> AddItemAsync(string shelfId, [FromBody] ItemDto itemDto, CancellationToken cancellationToken)
+    public async Task<ActionResult<ItemDto>> AddItemAsync(string shelfId, [FromBody] ItemCreateDto itemDto, CancellationToken cancellationToken)
     {
         var addedItem = await _shelvesService.AddItemAsync(shelfId, itemDto, cancellationToken);
         // TODO change to Created At Action

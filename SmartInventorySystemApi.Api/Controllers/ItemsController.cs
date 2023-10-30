@@ -10,7 +10,7 @@ namespace SmartInventorySystemApi.Api.Controllers;
 
 [Authorize]
 [Route("items")]
-public class ItemsController : ControllerBase
+public class ItemsController : ApiController
 {
     private readonly IItemsService _itemsService;
 
@@ -20,7 +20,7 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedList<ItemDto>>> GetItemsPageAsync(int page, int size, string groupId, string search, bool? IsTaken, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<ItemDto>>> GetItemsPageAsync(int page, int size, string groupId, string? search, bool? IsTaken, CancellationToken cancellationToken)
     {
         var items = await _itemsService.GetItemsPageAsync(page, size, groupId, search, IsTaken, cancellationToken);
         return Ok(items);

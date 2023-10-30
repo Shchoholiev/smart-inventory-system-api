@@ -126,7 +126,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 var shelf = await _shelvesRepository.GetOneAsync(item.ShelfId, cancellationToken);
                 var comment = $"Light Turned on By AccessPointDevice. {scanType} Scan.";
                 await _shelfControllersService.ControlLightAsync(
-                    deviceGuid, shelf.PositionInRack, true, item.Id.ToString(), comment, cancellationToken);
+                    deviceGuid, shelf.PositionInRack, true, item.Id.ToString(), ItemHistoryType.Scan, comment, cancellationToken);
             }));
         }
 
