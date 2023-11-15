@@ -10,7 +10,7 @@ public class ShelfDto
 
     public bool IsLitUp { get; set; }
 
-    public ObjectId GroupId { get; set; }
+    public string GroupId { get; set; }
 
-    public ObjectId DeviceId { get; set; }
+    public string DeviceId { get; set; }
 }
