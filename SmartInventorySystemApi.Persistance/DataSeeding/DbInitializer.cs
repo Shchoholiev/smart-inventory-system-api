@@ -34,7 +34,7 @@ public class DbInitializer
         
         var ownerRole = new Role
         {
-            Name = "Ownder"
+            Name = "Owner"
         };
         await rolesCollection.InsertOneAsync(ownerRole);
 

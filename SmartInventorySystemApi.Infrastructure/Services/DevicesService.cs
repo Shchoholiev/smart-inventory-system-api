@@ -23,7 +23,7 @@ namespace SmartInventorySystemApi.Infrastructure.Services;
 public class DevicesService : ServiceBase, IDevicesService
 {
     private readonly IDevicesRepository _devicesRepository;
-    
+
     private readonly IShelvesRepository _shelvesRepository;
 
     // Azure IoT Hub Registry Manager
@@ -34,7 +34,7 @@ public class DevicesService : ServiceBase, IDevicesService
     private readonly IMapper _mapper;
 
     public DevicesService(
-        IDevicesRepository devicesRepository, 
+        IDevicesRepository devicesRepository,
         RegistryManager registryManager,
         IShelvesRepository shelvesRepository,
         ILogger<DevicesService> logger,
@@ -74,43 +74,11 @@ public class DevicesService : ServiceBase, IDevicesService
 
         var createdDevice = await _devicesRepository.AddAsync(device, cancellationToken);
 
-        switch (createdDevice.Type)
-        {
-            case DeviceType.Rack4ShelfController:
-
-                _logger.LogInformation($"Creating 4 shelves for device with Id {createdDevice.Id}.");
-                
-                var shelves = new List<Shelf>();
-                for (int i = 0; i < 4; i++)
-                {
-                    var shelf = new Shelf
-                    {
-                        PositionInRack = i + 1,
-                        DeviceId = createdDevice.Id,
-                        Name = $"{createdDevice.Name} Shelf #{i + 1}",
-                        CreatedById = GlobalUser.Id.Value,
-                        CreatedDateUtc = DateTime.UtcNow
-                    };
-                    shelves.Add(shelf);
-                }
-                
-                await _shelvesRepository.AddManyShelvesAsync(shelves, cancellationToken);
-
-                _logger.LogInformation($"Created {shelves.Count} shelves for device with Id {createdDevice.Id}.");
-
-                break;
-
-            case DeviceType.Unknown:
-            case DeviceType.AccessPoint:
-            default:
-                break;
-        }
-
         var deviceDto = _mapper.Map<DeviceAdminDto>(createdDevice);
         deviceDto.AccessKey = iotDevice.Authentication.SymmetricKey.PrimaryKey;
 
         _logger.LogInformation($"Device with Id {deviceDto.Id} is created.");
-        
+
         return deviceDto;
     }
 
@@ -187,8 +155,41 @@ public class DevicesService : ServiceBase, IDevicesService
             device.IsActive = true;
             var groupObjectId = ParseObjectId(deviceDto.GroupId);
             device.GroupId = groupObjectId;
-        } 
-        else 
+
+            switch (device.Type)
+            {
+                case DeviceType.Rack4ShelfController:
+
+                    _logger.LogInformation($"Creating 4 shelves for device with Id {device.Id}.");
+
+                    var shelves = new List<Shelf>();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        var shelf = new Shelf
+                        {
+                            PositionInRack = i + 1,
+                            DeviceId = device.Id,
+                            GroupId = groupObjectId,
+                            Name = $"{device.Name} Shelf #{i + 1}",
+                            CreatedById = GlobalUser.Id.Value,
+                            CreatedDateUtc = DateTime.UtcNow
+                        };
+                        shelves.Add(shelf);
+                    }
+
+                    await _shelvesRepository.AddManyShelvesAsync(shelves, cancellationToken);
+
+                    _logger.LogInformation($"Created {shelves.Count} shelves for device with Id {device.Id}.");
+
+                    break;
+
+                case DeviceType.Unknown:
+                case DeviceType.AccessPoint:
+                default:
+                    break;
+            }
+        }
+        else
         {
             throw new NotImplementedException("Deactivation of a device is not implemented.");
         }
