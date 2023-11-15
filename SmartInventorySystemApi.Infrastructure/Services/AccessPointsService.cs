@@ -55,11 +55,10 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
     {
         _logger.LogInformation($"Finding item by image for device {deviceGuid}.");
 
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        var combinedCancellationToken = cts.Token;
+        using var cts = new CancellationTokenSource();
 
-        var findItemByCodeTask = FindItemByScannableCodeAsync(image, combinedCancellationToken);
-        var findItemByTagsTask = FindItemByImageAsync(image, combinedCancellationToken);
+        var findItemByCodeTask = FindItemByScannableCodeAsync(image, cancellationToken);
+        var findItemByTagsTask = FindItemByImageAsync(image, cts.Token);
         var searchTask = Task.WhenAny(findItemByCodeTask, findItemByTagsTask);
 
         var parsedDeviceGuid = Guid.Parse(deviceGuid);
