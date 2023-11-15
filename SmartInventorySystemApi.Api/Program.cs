@@ -2,6 +2,8 @@ using SmartInventorySystemApi.Api.Middlewares;
 using SmartInventorySystemApi.Application;
 using SmartInventorySystemApi.Infrastructure;
 using SmartInventorySystemApi.Persistance;
+using SmartInventorySystemApi.Persistance.Database;
+using SmartInventorySystemApi.Persistance.DataSeeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// using var scope = app.Services.CreateScope();
+// var context = scope.ServiceProvider.GetService<MongoDbContext>();
+// var initializer = new DbInitializer(context);
+// await initializer.InitializeDb();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
