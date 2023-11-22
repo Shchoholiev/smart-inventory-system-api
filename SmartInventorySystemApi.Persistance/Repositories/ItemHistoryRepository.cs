@@ -42,9 +42,10 @@ public class ItemHistoryRepository : BaseRepository<ItemHistory>, IItemHistoryRe
 
         var itemHistory = await _collection.Aggregate()
             .Match(h => 
-                h.CreatedDateUtc > DateTime.UtcNow.AddMinutes(-5)
+                h.CreatedDateUtc > DateTime.UtcNow.AddMinutes(-5) // Get only history that are 5 minutes old
                 // TODO: Add ItemHistoryType? 
-                && h.IsTaken) // Get only history that are 5 minutes old
+                // && h.IsTaken
+                ) 
             .AppendStage<BsonDocument>(itemHistoryLookup)
             .AppendStage<ItemHistory>(new BsonDocument("$project", new BsonDocument("Items", 0)))
             .SortByDescending(h => h.CreatedDateUtc)

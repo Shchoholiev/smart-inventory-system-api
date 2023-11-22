@@ -169,6 +169,10 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
                 var comment = "Light Turned off By ShelfController because movement was detected.";
                 await ControlLightAsync(
                     deviceGuid, shelfPosition, false, itemHistory.ItemId.ToString(), ItemHistoryType.Shelf, comment, cancellationToken);
+            } 
+            else
+            {
+                _logger.LogInformation($"Item wasn't recently ");
             }
         }
 

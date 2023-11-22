@@ -17,6 +17,8 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
 {
     private readonly IScanHistoryRepository _scanHistoryRepository;
 
+    private readonly IItemHistoryRepository _itemHistoryRepository;
+
     private readonly IDevicesRepository _devicesRepository;
 
     private readonly IItemsRepository _itemsRepository;
@@ -33,6 +35,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
 
     public AccessPointsService(
         IScanHistoryRepository scanHistoryRepository,
+        IItemHistoryRepository itemHistoryRepository,
         IDevicesRepository devicesRepository,
         IItemsRepository itemsRepository,
         IShelvesRepository shelvesRepository,
@@ -42,6 +45,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
         IMapper mapper)
     {
         _scanHistoryRepository = scanHistoryRepository;
+        _itemHistoryRepository = itemHistoryRepository;
         _devicesRepository = devicesRepository;
         _itemsRepository = itemsRepository;
         _shelvesRepository = shelvesRepository;
@@ -126,6 +130,24 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 var comment = $"Light Turned on By AccessPointDevice. {scanType} Scan.";
                 await _shelfControllersService.ControlLightAsync(
                     deviceGuid, shelf.PositionInRack, true, item.Id.ToString(), ItemHistoryType.Scan, comment, cancellationToken);
+
+                shelf.IsLitUp = true;
+                shelf.LastModifiedById = GlobalUser.Id.Value;
+                shelf.LastModifiedDateUtc = DateTime.UtcNow;
+                var shelfUpdateTask = _shelvesRepository.UpdateAsync(shelf, cancellationToken);
+
+                var itemHistory = new ItemHistory
+                {
+                    ItemId = item.Id,
+                    IsTaken = item.IsTaken,
+                    Comment = "Item Found By AccessPointDevice. " + scanType + " Scan.",
+                    Type = ItemHistoryType.Scan,
+                    CreatedById = GlobalUser.Id.Value,
+                    CreatedDateUtc = DateTime.UtcNow
+                };
+                var itemHistoryTask = _itemHistoryRepository.AddAsync(itemHistory, cancellationToken);
+
+                await Task.WhenAll(shelfUpdateTask, itemHistoryTask);
             }));
         }
 
@@ -194,7 +216,9 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 .Take(3)
                 .Select(tag => _itemsRepository.GetOneAsync(
                     // TODO: Add description? Add isTaken? Use embedded search?
-                    i => !i.IsDeleted && Regex.IsMatch(i.Name, tag.Name, RegexOptions.IgnoreCase), 
+                    i => !i.IsDeleted 
+                        && (Regex.IsMatch(i.Name, tag.Name, RegexOptions.IgnoreCase)
+                        || Regex.IsMatch(i.Description, tag.Name, RegexOptions.IgnoreCase)),
                     cancellationToken));
             var searchResults = await Task.WhenAll(searchTasks);
             if (searchResults.Any(i => i != null))
