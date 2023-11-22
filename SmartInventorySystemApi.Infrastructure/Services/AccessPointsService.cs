@@ -61,44 +61,30 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
 
         using var cts = new CancellationTokenSource();
 
-        var findItemByCodeTask = FindItemByScannableCodeAsync(image, cancellationToken);
-        var findItemByTagsTask = FindItemByImageAsync(image, cts.Token);
-        var searchTask = Task.WhenAny(findItemByCodeTask, findItemByTagsTask);
-
         var parsedDeviceGuid = Guid.Parse(deviceGuid);
-        var deviceTask = _devicesRepository.GetOneAsync(
+        var accessPoint = await _devicesRepository.GetOneAsync(
             d => d.Guid == parsedDeviceGuid && !d.IsDeleted, cancellationToken);
-        
-        await Task.WhenAll(
-            deviceTask,
-            searchTask
-        );
+        if (accessPoint == null)
+        {
+            throw new EntityNotFoundException($"Access Point wit Guid: {deviceGuid} is not found in database.");
+        }
 
+        var findItemByCodeTask = FindItemByScannableCodeAsync(image, accessPoint.GroupId, cancellationToken);
+        var findItemByTagsTask = FindItemByImageAsync(image, accessPoint.GroupId, cts.Token);
+        
         ScanType scanType;
         Item item;
 
-        var completedSearchTask = await searchTask;
-        // If first completed task is Search by Scannable Codes then cancel image tagging
+        // Always check for QR Code first
         // Because Image Tagging will always return tags and can accidentally find item by tags on the image with a QR Code
-        if (completedSearchTask == findItemByCodeTask)
+        (item, scanType) = await findItemByCodeTask;
+        if (item != null)
         {
-            (item, scanType) = await completedSearchTask;
-            if (item != null)
-            {
-                cts.Cancel(); 
-            }
-        }
+            cts.Cancel(); 
+        } 
         else
         {
-            // Handle result of findItemByTagsTask
-            (item, scanType) = await completedSearchTask; 
-        }
-
-        // Rare scenario, because of this it is happening in parallel with recognition.
-        var device = await deviceTask;
-        if (device == null)
-        {
-            throw new EntityNotFoundException($"Device wit Guid: {deviceGuid} is not found in database.");
+            (item, scanType) = await findItemByTagsTask; 
         }
 
         // TODO: separate functions
@@ -108,7 +94,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
             {
                 var scanHistory = new ScanHistory
                 {
-                    DeviceId = device.Id,
+                    DeviceId = accessPoint.Id,
                     ScanType = scanType,
                     Result = item == null ? "Not Found Item" : "Found Item",
                     CreatedById = GlobalUser.Id ?? ObjectId.Empty, // TODO: Add authorization for Access Point Device
@@ -134,20 +120,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 shelf.IsLitUp = true;
                 shelf.LastModifiedById = GlobalUser.Id.Value;
                 shelf.LastModifiedDateUtc = DateTime.UtcNow;
-                var shelfUpdateTask = _shelvesRepository.UpdateAsync(shelf, cancellationToken);
-
-                var itemHistory = new ItemHistory
-                {
-                    ItemId = item.Id,
-                    IsTaken = item.IsTaken,
-                    Comment = "Item Found By AccessPointDevice. " + scanType + " Scan.",
-                    Type = ItemHistoryType.Scan,
-                    CreatedById = GlobalUser.Id.Value,
-                    CreatedDateUtc = DateTime.UtcNow
-                };
-                var itemHistoryTask = _itemHistoryRepository.AddAsync(itemHistory, cancellationToken);
-
-                await Task.WhenAll(shelfUpdateTask, itemHistoryTask);
+                await _shelvesRepository.UpdateAsync(shelf, cancellationToken);
             }));
         }
 
@@ -169,7 +142,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
         return dtos;
     }
 
-    private async Task<(Item?, ScanType)> FindItemByScannableCodeAsync(byte[] image, CancellationToken cancellationToken)
+    private async Task<(Item?, ScanType)> FindItemByScannableCodeAsync(byte[] image, ObjectId groupId, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Finding item by scannable code.");
 
@@ -186,7 +159,10 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
             if (!string.IsNullOrEmpty(itemIdFromCode))
             {
                 var itemObjectId = ParseObjectId(itemIdFromCode);
-                var item = await _itemsRepository.GetOneAsync(i => i.Id == itemObjectId && !i.IsDeleted, cancellationToken);
+                var item = await _itemsRepository.GetOneAsync(
+                    i => i.Id == itemObjectId 
+                        && i.GroupId == groupId
+                        && !i.IsDeleted, cancellationToken);
 
                 _logger.LogInformation($"Item found by scannable code.");
                 
@@ -204,7 +180,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
         return (null, ScanType.QRCode);
     }
 
-    private async Task<(Item?, ScanType)> FindItemByImageAsync(byte[] image, CancellationToken cancellationToken)
+    private async Task<(Item?, ScanType)> FindItemByImageAsync(byte[] image, ObjectId groupId, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Finding item by image.");
 
@@ -217,6 +193,7 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 .Select(tag => _itemsRepository.GetOneAsync(
                     // TODO: Add description? Add isTaken? Use embedded search?
                     i => !i.IsDeleted 
+                        && i.GroupId == groupId
                         && (Regex.IsMatch(i.Name, tag.Name, RegexOptions.IgnoreCase)
                         || Regex.IsMatch(i.Description, tag.Name, RegexOptions.IgnoreCase)),
                     cancellationToken));

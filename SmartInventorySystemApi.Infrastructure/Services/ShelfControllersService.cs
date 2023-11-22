@@ -172,7 +172,7 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
             } 
             else
             {
-                _logger.LogInformation($"Item wasn't recently ");
+                _logger.LogInformation($"Item wasn't recently touched.");
             }
         }
 
