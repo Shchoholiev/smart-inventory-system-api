@@ -44,7 +44,8 @@ public class ItemsService : ServiceBase, IItemsService
         _logger.LogInformation($"Getting items page {page} with size {size} for group {groupId}.");
 
         var groupObjectId = ParseObjectId(groupId); 
-        Expression<Func<Item, bool>> predicate = PredicateBuilder.New<Item>(i => i.GroupId == groupObjectId);
+        Expression<Func<Item, bool>> predicate = PredicateBuilder.New<Item>(
+            i => i.GroupId == groupObjectId && !i.IsDeleted);
 
         if (isTaken.HasValue)
         {
