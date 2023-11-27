@@ -40,15 +40,7 @@ public class UsersController : ApiController
     }
 
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetUserAsync(string id, CancellationToken cancellationToken)
-    {
-        var user = await _usersService.GetUserAsync(id, cancellationToken);
-        return Ok(user);
-    }
-    
-    [Authorize]
-    [HttpGet("{id}")]
+    [HttpGet("{username}")]
     public async Task<ActionResult<UserDto>> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
         var user = await _usersService.GetUserByUsernameAsync(username, cancellationToken);
