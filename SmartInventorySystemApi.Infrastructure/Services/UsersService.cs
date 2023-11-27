@@ -43,4 +43,16 @@ public class UsersService : IUsersService
 
         return _mapper.Map<UserDto>(entity);
     }
+
+    public async Task<UserDto> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
+    {
+        var entity = await _repository.GetOneAsync(
+            u => u.Email == username || u.Phone == username, cancellationToken);
+        if (entity == null)
+        {
+            throw new EntityNotFoundException("User");
+        }
+
+        return _mapper.Map<UserDto>(entity);
+    }
 }
