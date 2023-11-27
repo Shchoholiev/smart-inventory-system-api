@@ -128,6 +128,8 @@ public class UserManager : ServiceBase, IUserManager
         var principal = _tokensService.GetPrincipalFromExpiredToken(tokensModel.AccessToken);
         var userId = ParseObjectId(principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 
+        var userTask = this._usersRepository.GetOneAsync(userId, cancellationToken);
+
         var refreshTokenModel = await this._refreshTokensRepository
             .GetOneAsync(r => 
                 r.Token == tokensModel.RefreshToken 
@@ -138,22 +140,16 @@ public class UserManager : ServiceBase, IUserManager
             throw new SecurityTokenExpiredException("Refresh Token expired.");
         }
 
-        var refreshToken = refreshTokenModel.Token;
-
         // Update Refresh token if it expires in less than 7 days to keep user constantly logged in if he uses the app
         if (refreshTokenModel.ExpiryDateUTC.AddDays(-7) < DateTime.UtcNow)
         {
             await _refreshTokensRepository.DeleteAsync(refreshTokenModel, cancellationToken);
             
-            var newRefreshToken = await AddRefreshToken(userId, cancellationToken);
-            refreshToken = newRefreshToken.Token;
+            refreshTokenModel = await AddRefreshToken(userId, cancellationToken);
         }
 
-        var tokens = new TokensModel
-        {
-            AccessToken = _tokensService.GenerateAccessToken(principal.Claims),
-            RefreshToken = refreshToken
-        };
+        var user = await userTask;
+        var tokens = this.GetUserTokens(user, refreshTokenModel);
 
         this._logger.LogInformation($"Refreshed access token.");
 
