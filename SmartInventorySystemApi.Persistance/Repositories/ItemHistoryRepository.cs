@@ -14,7 +14,7 @@ public class ItemHistoryRepository : BaseRepository<ItemHistory>, IItemHistoryRe
     {
         return await this._collection
             .Find(h => h.ItemId == itemId)
-            .SortBy(h => h.CreatedDateUtc)
+            .SortByDescending(h => h.CreatedDateUtc)
             .Skip((page - 1) * size)
             .Limit(size)
             .ToListAsync(cancellationToken);
