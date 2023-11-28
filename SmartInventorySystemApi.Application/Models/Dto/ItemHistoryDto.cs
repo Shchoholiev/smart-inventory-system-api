@@ -9,4 +9,6 @@ public class ItemHistoryDto
     public bool IsTaken { get; set; }
 
     public string? Comment { get; set; }
+
+    public DateTime CreatedDateUtc { get; set; }
 }

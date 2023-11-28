@@ -9,4 +9,6 @@ public class ScanHistoryDto
     public ScanType ScanType { get; set; }
 
     public string Result { get; set; }
+
+    public DateTime CreatedDateUtc { get; set; }
 }
