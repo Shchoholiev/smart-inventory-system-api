@@ -9,4 +9,6 @@ public class ItemDto
     public string? Description { get; set; }
     
     public bool IsTaken { get; set; }
+
+    public string ShelfId { get; set; }
 }
