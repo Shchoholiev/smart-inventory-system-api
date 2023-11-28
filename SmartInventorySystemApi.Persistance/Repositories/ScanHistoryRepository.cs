@@ -14,7 +14,7 @@ public class ScanHistoryRepository : BaseRepository<ScanHistory>, IScanHistoryRe
     {
         return await this._collection
             .Find(h => h.DeviceId == deviceId)
-            .SortByDescending(h => h.CreatedDateUtc)
+            .SortBy(h => h.CreatedDateUtc)
             .Skip((page - 1) * size)
             .Limit(size)
             .ToListAsync(cancellationToken);
