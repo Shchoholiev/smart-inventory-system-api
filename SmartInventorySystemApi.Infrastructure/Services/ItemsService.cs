@@ -172,7 +172,7 @@ public class ItemsService : ServiceBase, IItemsService
         var itemObjectId = ParseObjectId(itemId);
 
         var itemHistoryPredicate = PredicateBuilder.New<ItemHistory>(ih => ih.ItemId == itemObjectId && !ih.IsDeleted);
-        var itemHistoryTask = _itemsHistoryRepository.GetPageAsync(page, size, itemHistoryPredicate, cancellationToken);
+        var itemHistoryTask = _itemsHistoryRepository.GetHistoryPageAsync(page, size, itemObjectId, cancellationToken);
         var totalCountTask = _itemsHistoryRepository.GetCountAsync(itemHistoryPredicate, cancellationToken);
 
         await Task.WhenAll(itemHistoryTask, totalCountTask);

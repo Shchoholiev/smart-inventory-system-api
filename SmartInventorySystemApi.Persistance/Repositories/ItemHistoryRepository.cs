@@ -13,8 +13,8 @@ public class ItemHistoryRepository : BaseRepository<ItemHistory>, IItemHistoryRe
     public async Task<List<ItemHistory>> GetHistoryPageAsync(int page, int size, ObjectId itemId, CancellationToken cancellationToken)
     {
         return await this._collection
-            .Find(h => h.ItemId == itemId)
-            .SortByDescending(h => h.Id)
+            .Find(h => h.ItemId == itemId && !h.IsDeleted)
+            .SortByDescending(h => h.CreatedDateUtc)
             .Skip((page - 1) * size)
             .Limit(size)
             .ToListAsync(cancellationToken);
