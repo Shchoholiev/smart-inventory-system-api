@@ -165,10 +165,20 @@ public class ShelfControllersService : ServiceBase, IShelfControllersService
             if (itemHistory != null)
             {
                 _logger.LogInformation($"Shelf with Id: {shelf.Id} was recently lit up. Turning the light off.");
-                
+
+                await ControlLightAsync(deviceGuid, shelfPosition, false, cancellationToken);
+
                 var comment = "Light Turned off By ShelfController because movement was detected.";
-                await ControlLightAsync(
-                    deviceGuid, shelfPosition, false, itemHistory.ItemId.ToString(), ItemHistoryType.Shelf, comment, cancellationToken);
+                var newItemHistory = new ItemHistory
+                {
+                    ItemId = itemHistory.ItemId,
+                    Comment = comment,
+                    Type = ItemHistoryType.Shelf,
+                    IsTaken = false,
+                    CreatedById = GlobalUser.Id.Value,
+                    CreatedDateUtc = DateTime.UtcNow
+                };
+                await _itemHistoryRepository.AddAsync(newItemHistory, cancellationToken);
             } 
             else
             {
