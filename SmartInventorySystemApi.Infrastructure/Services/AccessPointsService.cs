@@ -113,9 +113,12 @@ public class AccessPointsService : ServiceBase, IAccessPointsService
                 _logger.LogInformation($"Item found by {scanType}.");
 
                 var shelf = await _shelvesRepository.GetOneAsync(item.ShelfId, cancellationToken);
+                var shelfController = await _devicesRepository.GetOneAsync(
+                    d => d.Id == shelf.DeviceId && !d.IsDeleted, cancellationToken);
+
                 var comment = $"Light Turned on By AccessPointDevice. {scanType} Scan.";
                 await _shelfControllersService.ControlLightAsync(
-                    deviceGuid, shelf.PositionInRack, true, item.Id.ToString(), ItemHistoryType.Scan, comment, cancellationToken);
+                    shelfController.Guid.ToString(), shelf.PositionInRack, true, item.Id.ToString(), ItemHistoryType.Scan, comment, cancellationToken);
 
                 shelf.IsLitUp = true;
                 shelf.LastModifiedById = GlobalUser.Id.Value;
