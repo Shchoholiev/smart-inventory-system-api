@@ -39,7 +39,14 @@ public class ItemsService : ServiceBase, IItemsService
         _logger = logger;
     }
 
-    public async Task<PagedList<ItemDto>> GetItemsPageAsync(int page, int size, string groupId, string search, bool? isTaken, CancellationToken cancellationToken)
+    public async Task<PagedList<ItemDto>> GetItemsPageAsync(
+        int page, 
+        int size, 
+        string groupId, 
+        string? search, 
+        bool? isTaken, 
+        string? shelfId,
+        CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Getting items page {page} with size {size} for group {groupId}.");
 
@@ -58,6 +65,12 @@ public class ItemsService : ServiceBase, IItemsService
                 Regex.IsMatch(i.Name, search, RegexOptions.IgnoreCase)
                 || (!string.IsNullOrEmpty(i.Description) 
                     && Regex.IsMatch(i.Description, search, RegexOptions.IgnoreCase)));
+        }
+
+        if (!string.IsNullOrEmpty(shelfId))
+        {
+            var shelfObjectId = ParseObjectId(shelfId);
+            predicate = predicate.And(i => i.ShelfId == shelfObjectId);
         }
 
         var itemsTask = _itemsRepository.GetPageAsync(page, size, predicate, cancellationToken);

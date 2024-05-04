@@ -91,6 +91,27 @@ public class ItemsControllerTests : TestsBase
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    [Fact]
+    public async Task GetItemsPageAsync_GroupWithItemsAndShelfId_ReturnsFilteredItemsPagedList()
+    {
+        // Arrange
+        await LoginAsync("group@gmail.com", "Yuiop12345");
+        var page = 1;
+        var size = 10;
+        var groupId = "652c3b89ae02a3135d6429fc"; // group with items
+        var shelfId = "651c1b09ae02a3135d6439fc"; // shelf with items
+
+        // Act
+        var response = await HttpClient.GetAsync(
+            $"{ResourceUrl}?page={page}&size={size}&groupId={groupId}&shelfId={shelfId}");
+        var itemsList = await response.Content.ReadFromJsonAsync<PagedList<ItemDto>>();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(itemsList);
+        Assert.True(itemsList.Items.All(i => i.ShelfId == shelfId));
+    }
+
     #endregion
 
 

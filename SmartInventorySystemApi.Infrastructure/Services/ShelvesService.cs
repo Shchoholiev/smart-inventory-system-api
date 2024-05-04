@@ -1,5 +1,8 @@
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Azure;
+using LinqKit;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -48,13 +51,26 @@ public class ShelvesService : ServiceBase, IShelvesService
         _logger = logger;
     }
 
-    public async Task<PagedList<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
+    public async Task<PagedList<ShelfDto>> GetShelvesPageAsync(
+        int page, 
+        int size, 
+        string groupId, 
+        string search, 
+        CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Getting shelves page {page} with size {size} for group {groupId}");
 
         var groupObjectId = ParseObjectId(groupId); 
-        var shelvesTask = _shelvesRepository.GetPageAsync(page, size, s => s.GroupId == groupObjectId, cancellationToken);
-        var totalCountTask = _shelvesRepository.GetCountAsync(s => s.GroupId == groupObjectId, cancellationToken);
+        Expression<Func<Shelf, bool>> predicate = PredicateBuilder.New<Shelf>(
+            s => s.GroupId == groupObjectId && !s.IsDeleted);
+        if (!string.IsNullOrEmpty(search))
+        {
+            predicate = predicate.And(s => 
+                Regex.IsMatch(s.Name, search, RegexOptions.IgnoreCase));
+        }
+
+        var shelvesTask = _shelvesRepository.GetPageAsync(page, size, predicate, cancellationToken);
+        var totalCountTask = _shelvesRepository.GetCountAsync(predicate, cancellationToken);
 
         await Task.WhenAll(shelvesTask, totalCountTask);
 

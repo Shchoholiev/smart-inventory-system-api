@@ -69,6 +69,28 @@ public class ShelvesControllerTests : TestsBase
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    [Fact]
+    public async Task GetShelvesPageAsync_GroupWithShelvesAndSearch_ReturnsShelvesPagedList()
+    {
+        // Arrange
+        await LoginAsync("group@gmail.com", "Yuiop12345");
+        var page = 1;
+        var size = 10;
+        var groupId = "652c3b89ae02a3135d6429fc"; // group with shelves
+        var search = "Shelf 1";
+
+        // Act
+        var response = await HttpClient.GetAsync(
+            $"{ResourceUrl}?page={page}&size={size}&groupId={groupId}&search={search}");
+        var shelvesList = await response.Content.ReadFromJsonAsync<PagedList<ShelfDto>>();
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(shelvesList);
+        Assert.NotEmpty(shelvesList.Items);
+        Assert.True(shelvesList.Items.All(s => s.Name.Contains(search)));
+    }
+
     #endregion
 
     #region GetShelfAsync
@@ -143,7 +165,7 @@ public class ShelvesControllerTests : TestsBase
     {
         // Arrange
         await LoginAsync("group@gmail.com", "Yuiop12345");
-        string shelfId = "651c2b09ae02a3135d6439fc"; // shelf without items
+        string shelfId = "651c3b09ae02a3135d6439fc"; // shelf without items
 
         // Act
         var response = await HttpClient.GetAsync($"{ResourceUrl}/{shelfId}/items");

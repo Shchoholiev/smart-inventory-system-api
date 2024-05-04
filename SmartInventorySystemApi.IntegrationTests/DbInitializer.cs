@@ -319,6 +319,18 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
 
+        var item5 = new Item
+        {
+            Id = ObjectId.Parse("651c1b04ae02a3135d6430fc"),
+            Name = "Test Item 5",
+            Description = "This is a test item 5",
+            IsTaken = false,
+            ShelfId = ObjectId.Parse("651c2b09ae02a3135d6439fc"), // See above
+            GroupId = ObjectId.Parse("652c3b89ae02a3135d6429fc"), // See above
+            CreatedById = ObjectId.Parse("652c3b89ae02a3135d6408fc"), // See above
+            CreatedDateUtc = DateTime.UtcNow
+        };
+
         var charger = new Item
         {
             Id = ObjectId.Parse("651c1b04ae02a8135d6439fc"),
@@ -343,7 +355,8 @@ public class DbInitializer
             CreatedDateUtc = DateTime.UtcNow
         };
 
-        await itemsCollection.InsertManyAsync(new List<Item> { item1, item2, item3, item4, charger, movementTestItem });
+        await itemsCollection.InsertManyAsync(
+            new List<Item> { item1, item2, item3, item4, item5, charger, movementTestItem });
     }
 
     public async Task InitializeScansHistoryAsync()

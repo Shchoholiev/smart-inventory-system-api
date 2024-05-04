@@ -22,9 +22,14 @@ public class ShelvesController : ApiController
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<PagedList<ShelfDto>>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<ShelfDto>>> GetShelvesPageAsync(
+        int page, 
+        int size, 
+        string groupId, 
+        string? search, 
+        CancellationToken cancellationToken)
     {
-        var shelves = await _shelvesService.GetShelvesPageAsync(page, size, groupId, cancellationToken);
+        var shelves = await _shelvesService.GetShelvesPageAsync(page, size, groupId, search, cancellationToken);
         return Ok(shelves);
     }
 

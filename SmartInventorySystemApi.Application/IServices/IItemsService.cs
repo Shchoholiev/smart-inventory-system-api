@@ -8,7 +8,14 @@ namespace SmartInventorySystemApi.Application.IServices;
 // TODO: Add check if user is part of the group this item belongs to.
 public interface IItemsService
 {
-    Task<PagedList<ItemDto>> GetItemsPageAsync(int page, int size, string groupId, string search, bool? IsTaken, CancellationToken cancellationToken);
+    Task<PagedList<ItemDto>> GetItemsPageAsync(
+        int page, 
+        int size, 
+        string groupId, 
+        string? search, 
+        bool? IsTaken, 
+        string? shelfId, 
+        CancellationToken cancellationToken);
 
     Task<ItemDto> GetItemAsync(string itemId, CancellationToken cancellationToken);
 

@@ -12,7 +12,12 @@ public interface IShelvesService
     /// Returns Shelves page for a given group.
     /// User must be part of the group (Future enhancement).
     /// </summary>
-    Task<PagedList<ShelfDto>> GetShelvesPageAsync(int page, int size, string groupId, CancellationToken cancellationToken);
+    Task<PagedList<ShelfDto>> GetShelvesPageAsync(
+        int page, 
+        int size, 
+        string groupId, 
+        string? search,
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Returns a Shelf.
