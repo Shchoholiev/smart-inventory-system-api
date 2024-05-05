@@ -1,5 +1,7 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using SmartInventorySystemApi.Application.IRepositories;
+using SmartInventorySystemApi.Application.Models.Lookup;
 using SmartInventorySystemApi.Domain.Entities;
 using SmartInventorySystemApi.Persistance.Database;
 
@@ -53,5 +55,53 @@ public class ShelvesRepository: BaseRepository<Shelf>, IShelvesRepository
             updateDefinition, 
             options, 
             cancellationToken);
+    }
+
+    public async Task<List<ShelfLoadLookup>> GetShelvesByItemsCountAsync(ObjectId groupId, CancellationToken cancellationToken)
+    {
+        var lookupStage = @"
+            {
+                $lookup: {
+                    from: 'Items', 
+                    localField: '_id', 
+                    foreignField: 'ShelfId',  
+                    as: 'items' 
+                }
+            }";
+
+        var addItemsCountStage = @"
+            {
+                $addFields: {
+                    Shelf: '$$ROOT',
+                    ItemsCount: { $size: '$items' }
+                }
+            }";
+
+        var removeHistoryStage = @"
+            {
+                $project: {
+                    'Shelf.items': 0
+                }
+            }";
+
+        var projectionStage = @"
+            {
+                $project: {
+                    Shelf: 1,
+                    ItemsCount: 1,
+                    _id: 0,
+                }
+            }";
+
+        var shelves = await _collection
+            .Aggregate()
+            .Match(i => i.GroupId == groupId && !i.IsDeleted)
+            .AppendStage<BsonDocument>(lookupStage)
+            .AppendStage<BsonDocument>(addItemsCountStage)
+            .AppendStage<BsonDocument>(removeHistoryStage)
+            .AppendStage<ShelfLoadLookup>(projectionStage)
+            .ToListAsync(cancellationToken);
+
+        return shelves;
     }
 }
