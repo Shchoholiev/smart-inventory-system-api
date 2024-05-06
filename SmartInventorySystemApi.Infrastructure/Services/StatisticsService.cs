@@ -77,7 +77,7 @@ public class StatisticsService : ServiceBase, IStatisticsService
         _logger.LogInformation($"Getting users with most items statistics for group with Id {groupId}.");
 
         var objectGroupId = ParseObjectId(groupId);
-        var users = await _usersRepository.GetUsersWithMostItemsTakenAsync(objectGroupId, count, cancellationToken);
+        var users = await _itemsRepository.GetUsersWithMostItemsTakenAsync(objectGroupId, count, cancellationToken);
         var usersDto = _mapper.Map<List<UserDebt>>(users);
 
         _logger.LogInformation($"Retrieved users with most items statistics.");

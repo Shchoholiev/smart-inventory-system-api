@@ -9,4 +9,6 @@ public interface IItemsRepository : IBaseRepository<Item>
     Task<Item> UpdateAsync(Item item, CancellationToken cancellationToken);
 
     Task<List<ItemPopularityLookup>> GetItemsByPopularityAsync(ObjectId groupId, int count, CancellationToken cancellationToken);
+    
+    Task<List<UserDebtLookup>> GetUsersWithMostItemsTakenAsync(ObjectId groupId, int count, CancellationToken cancellationToken);
 }
