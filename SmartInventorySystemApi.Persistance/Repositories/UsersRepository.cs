@@ -89,6 +89,13 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
 
     public async Task<List<UserDebtLookup>> GetUsersWithMostItemsTakenAsync(ObjectId groupId, int count, CancellationToken cancellationToken)
     {
+        var matchStage = @"
+            {
+                $match: {
+                IsTaken: true
+                },
+            }";
+
         var lookupStage = @"
             {
                 $lookup: {
@@ -148,7 +155,8 @@ public class UsersRepository : BaseRepository<User>, IUsersRepository
 
         var users = await _collection
             .Aggregate()
-            .Match(i => i.GroupId == groupId && !i.IsDeleted)
+            .Match(u => u.GroupId == groupId && !u.IsDeleted)
+            .AppendStage<BsonDocument>(matchStage)
             .AppendStage<BsonDocument>(lookupStage)
             .AppendStage<BsonDocument>(sortHistoryStage)
             .AppendStage<BsonDocument>(addLatestItemHistoryStage)
